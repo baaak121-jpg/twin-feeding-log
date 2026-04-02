@@ -128,9 +128,9 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <p class="ai-hint" id="ai-hint">버튼을 눌러 음성을 입력하세요</p>
         <div class="ai-examples">
           <p>"<span class="ex-baby-first">첫째</span> 오후 3시 30분에 분유 150 기록해줘"</p>
-          <p>"<span class="ex-baby-second">둘째</span> 오전 10시 모유 20분"</p>
+          <p>"<span class="ex-baby-second">둘째</span> 30분 전에 모유 20분 먹었어"</p>
           <p>"둘 다 똥"</p>
-          <p class="ex-note">* 시간은 오전/오후 또는 24시간 형식으로 말씀해주세요</p>
+          <p class="ex-note">* 시간은 오전/오후, 24시간, 또는 "30분 전" 형식으로 말씀해주세요</p>
         </div>
       </div>
       <div class="ai-result-section" id="ai-result-section">
@@ -1205,7 +1205,12 @@ function parseWithGPT(transcript, callback){
   }
   
   var names = getDisplayNames();
+  var now = new Date();
+  var currentHour = now.getHours();
+  var currentMinute = now.getMinutes();
+  
   var prompt = '다음 음성 텍스트에서 수유 기록 정보를 추출해주세요.\n\n';
+  prompt += '현재 시각: '+currentHour+'시 '+currentMinute+'분\n';
   prompt += '아기 이름: "'+names.first+'" (첫째), "'+names.second+'" (둘째), "둘 다"\n';
   prompt += '음성 텍스트: "'+transcript+'"\n\n';
   prompt += 'JSON 형식으로만 응답해주세요:\n';
@@ -1223,7 +1228,11 @@ function parseWithGPT(transcript, callback){
   prompt += '- 분유/ml이면 unit="ml", 모유/분이면 unit="min"\n';
   prompt += '- 똥/응가/대변이 언급되면 poop=true\n';
   prompt += '- 시간이 없으면 hour와 minute를 null로 설정\n';
-  prompt += '- 분은 5분 단위로 반올림';
+  prompt += '- 분은 5분 단위로 반올림\n';
+  prompt += '- 상대 시간 처리:\n';
+  prompt += '  * "30분 전", "1시간 전" 등은 현재 시각에서 계산\n';
+  prompt += '  * "아까", "조금 전"은 현재 시각 그대로 사용\n';
+  prompt += '  * 예: 현재 15시 40분일 때 "30분 전"은 15시 10분';
   
   _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
   
