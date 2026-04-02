@@ -294,7 +294,12 @@ firebase.initializeApp({
 });
 var db = firebase.database();
 _log('B: firebase OK');
-_log('C: API key loaded='+(typeof OPENAI_API_KEY !== 'undefined'));
+
+if(typeof OPENAI_API_KEY !== 'undefined' && OPENAI_API_KEY){
+  _log('C: API key loaded, length='+OPENAI_API_KEY.length);
+} else {
+  _log('C: API key NOT loaded - openai-config.js may be missing');
+}
 
 /* ── Family Code ── */
 var familyCode = '';
@@ -1451,14 +1456,22 @@ function displayAIResult(parsed){
 }
 
 btnAI.addEventListener('click', function(){
+  _log('AI-BTN: clicked');
+  
   if(typeof OPENAI_API_KEY === 'undefined' || !OPENAI_API_KEY){
+    _log('AI-BTN: API key missing');
     alert('OpenAI API 키가 설정되지 않았습니다. 관리자에게 문의하세요.');
     return;
   }
+  
+  _log('AI-BTN: API key OK, familyCode='+familyCode);
+  
   if(!familyCode){
     alert('가족 코드를 먼저 연결해주세요.');
     return;
   }
+  
+  _log('AI-BTN: opening modal');
   initAISelects();
   aiModal.classList.add('open');
   aiMicBtn.classList.remove('recording');
@@ -1466,10 +1479,18 @@ btnAI.addEventListener('click', function(){
   aiResultContent.classList.add('hidden');
   aiToggleBtn.querySelector('.toggle-icon').classList.remove('open');
   aiConfirmBtn.classList.add('hidden');
+  _log('AI-BTN: modal opened');
 });
 
 aiMicBtn.addEventListener('click', function(){
   if(isRecording){
+    _log('AI-STOP: user stopped recording');
+    if(mediaRecorder && mediaRecorder.state === 'recording'){
+      mediaRecorder.stop();
+    }
+    isRecording = false;
+    aiMicBtn.classList.remove('recording');
+    aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
     return;
   }
   startVoiceRecording();
