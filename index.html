@@ -1252,12 +1252,11 @@ function parseWithGPT(transcript, callback){
   prompt += '- 분은 5분 단위로 반올림\n';
   prompt += '- 상대 시간 처리 (현재: '+currentHour+'시 '+roundedMinute+'분):\n';
   prompt += '  * "지금", "방금", "아까"는 현재 시각 사용\n';
-  prompt += '  * "5분 전"은 '+Math.floor((currentHour*60+roundedMinute-5)/60)+'시 '+((roundedMinute-5+60)%60)+'분\n';
-  prompt += '  * "10분 전"은 '+Math.floor((currentHour*60+roundedMinute-10)/60)+'시 '+((roundedMinute-10+60)%60)+'분\n';
-  prompt += '  * "15분 전"은 '+Math.floor((currentHour*60+roundedMinute-15)/60)+'시 '+((roundedMinute-15+60)%60)+'분\n';
-  prompt += '  * "30분 전"은 '+Math.floor((currentHour*60+roundedMinute-30)/60)+'시 '+((roundedMinute-30+60)%60)+'분\n';
-  prompt += '  * "1시간 전"은 '+((currentHour-1+24)%24)+'시 '+roundedMinute+'분\n';
-  prompt += '  * 다른 상대 시간도 위와 같이 현재 시각에서 계산';
+  prompt += '  * "N분 전": 현재 시각에서 N분을 빼고 5분 단위로 반올림\n';
+  prompt += '    - 예: "17분 전" → 현재에서 17분 뺀 후 5분 단위 반올림\n';
+  prompt += '    - 예: "23분 전" → 현재에서 23분 뺀 후 5분 단위 반올림\n';
+  prompt += '  * "N시간 전": 현재 시각에서 N시간을 뺀 시각\n';
+  prompt += '  * 계산 방법: 현재 총 분('+currentHour+'*60+'+roundedMinute+')에서 N분을 빼고, 시와 분으로 변환 후 분을 5분 단위 반올림';
   
   _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
   
