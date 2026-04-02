@@ -1297,39 +1297,72 @@ function transcribeWithWhisper(audioBlob, callback){
 }
 
 function startVoiceRecording(){
+  _log('AI-START: checking conditions...');
+  
   if(isRecording){
+    _log('AI-START: already recording');
+    return;
+  }
+  
+  if(typeof OPENAI_API_KEY === 'undefined' || !OPENAI_API_KEY){
+    _log('AI-START: API key not found');
+    alert('OpenAI API 키가 설정되지 않았습니다.');
     return;
   }
   
   if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    _log('AI-START: getUserMedia not supported');
     alert('이 브라우저는 음성 녹음을 지원하지 않습니다.');
     return;
   }
   
+  _log('AI-START: requesting microphone...');
   isRecording = true;
   aiMicBtn.classList.add('recording');
   aiHint.textContent = '듣는 중... (5초)';
-  aiResultDetails.removeAttribute('open');
+  aiResultContent.classList.add('hidden');
+  aiToggleBtn.querySelector('.toggle-icon').classList.remove('open');
   aiConfirmBtn.classList.add('hidden');
   audioChunks = [];
   
   navigator.mediaDevices.getUserMedia({audio: true})
   .then(function(stream){
-    _log('RECORD: started');
-    mediaRecorder = new MediaRecorder(stream);
+    _log('RECORD: mic access granted, starting recorder...');
+    
+    try {
+      mediaRecorder = new MediaRecorder(stream);
+      _log('RECORD: MediaRecorder created');
+    } catch(e){
+      _log('RECORD-ERROR: MediaRecorder creation failed - '+e.message);
+      alert('녹음기 생성 실패: '+e.message);
+      stream.getTracks().forEach(function(track){track.stop();});
+      isRecording = false;
+      aiMicBtn.classList.remove('recording');
+      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+      return;
+    }
     
     mediaRecorder.ondataavailable = function(e){
+      _log('RECORD: data available, size='+e.data.size);
       audioChunks.push(e.data);
     };
     
     mediaRecorder.onstop = function(){
       _log('RECORD: stopped, chunks='+audioChunks.length);
       var audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+      _log('RECORD: blob created, size='+audioBlob.size);
       stream.getTracks().forEach(function(track){track.stop();});
       
       isRecording = false;
       aiMicBtn.classList.remove('recording');
       aiHint.textContent = '처리 중...';
+      
+      if(audioBlob.size === 0){
+        _log('RECORD-ERROR: empty audio blob');
+        alert('녹음된 오디오가 없습니다. 다시 시도해주세요.');
+        aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+        return;
+      }
       
       transcribeWithWhisper(audioBlob, function(transcript){
         parseWithGPT(transcript, function(parsed){
@@ -1338,20 +1371,40 @@ function startVoiceRecording(){
       });
     };
     
-    mediaRecorder.start();
+    mediaRecorder.onerror = function(e){
+      _log('RECORD-ERROR: '+e.error);
+      alert('녹음 오류: '+e.error);
+      isRecording = false;
+      aiMicBtn.classList.remove('recording');
+      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+    };
+    
+    try {
+      mediaRecorder.start();
+      _log('RECORD: started successfully');
+    } catch(e){
+      _log('RECORD-START-ERROR: '+e.message);
+      alert('녹음 시작 실패: '+e.message);
+      stream.getTracks().forEach(function(track){track.stop();});
+      isRecording = false;
+      aiMicBtn.classList.remove('recording');
+      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+      return;
+    }
     
     setTimeout(function(){
       if(mediaRecorder && mediaRecorder.state === 'recording'){
+        _log('RECORD: stopping after 5 seconds');
         mediaRecorder.stop();
       }
     }, 5000);
   })
   .catch(function(err){
-    _log('RECORD-ERROR: '+err.message);
+    _log('RECORD-ERROR: '+err.name+' - '+err.message);
     alert('마이크 접근 오류: '+err.message);
     isRecording = false;
     aiMicBtn.classList.remove('recording');
-    aiHint.textContent = '마이크 버튼을 눌러 음성을 입력하세요';
+    aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
   });
 }
 
