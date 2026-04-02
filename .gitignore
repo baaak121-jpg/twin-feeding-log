@@ -65,5 +65,8 @@ node_modules/
 # dotenv environment variables file
 .env
 
+# OpenAI API Key (security)
+openai-config.js
+
 # dataconnect generated files
 .dataconnect
