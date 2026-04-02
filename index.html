@@ -31,7 +31,7 @@ header{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-b
 section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;box-shadow:0 2px 12px var(--shadow)}section h2{font-size:.95rem;font-weight:500;color:var(--text-soft);margin-bottom:.75rem}
 .add-row{display:flex;gap:.3rem;margin-bottom:1.1rem;margin-top:.2rem;align-items:center}
 .time-picker{display:flex;align-items:center;gap:.15rem;flex:0 0 auto}.time-picker select{padding:.6rem .25rem;font-size:.88rem;border:1px solid var(--border);border-radius:6px;font-family:inherit;background:var(--card);color:var(--text)}.time-picker #feeding-hour,.time-picker #feeding-minute{width:2.6rem;text-align:center;text-align-last:center}.time-picker .time-sep{font-weight:600;color:var(--text-soft);font-size:1rem}
-.vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
+.vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-wrap #feeding-volume:disabled{background:#e8e8e8;color:#999;cursor:not-allowed;border-color:#ddd}.vol-wrap #feeding-volume:disabled::placeholder{color:#aaa}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
 .mode-toggle{display:flex;flex-shrink:0}.mode-btn{padding:.55rem .5rem;border:1px solid var(--border);background:var(--bg);cursor:pointer;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;font-size:.95rem}.mode-btn:first-child{border-radius:6px 0 0 6px}.mode-btn:last-child{border-radius:0 6px 6px 0}.mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .poop-toggle{flex-shrink:0;padding:.55rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.95rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;margin-left:.15rem}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .baby-tabs-wrap{margin-bottom:1.2rem}.baby-tabs{display:flex;gap:.5rem}.baby-btn{flex:1;padding:.6rem;font-size:.9rem;font-family:inherit;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer;transition:all .2s}.baby-btn:hover{opacity:.85}
@@ -404,6 +404,22 @@ function initNamesUI(){updateBabyButtonLabels();}
 
 function unitLabel(u){return u==='min'?'분':'ml';}
 
+/* ── 수유량 입력 칸 활성화/비활성화 ── */
+function updateVolumeInputState(){
+  if(!selectedUnit){
+    volumeInput.disabled=true;
+    volumeInput.placeholder='수유방식 선택';
+    volumeInput.value='';
+  }else{
+    volumeInput.disabled=false;
+    if(selectedUnit==='min'){
+      volumeInput.placeholder='시간';
+    }else{
+      volumeInput.placeholder='용량';
+    }
+  }
+}
+
 /* ── Unit Toggle (토글 방식: 선택/해제 가능) ── */
 for(var ui=0;ui<unitBtns.length;ui++){(function(btn){
   btn.addEventListener('click',function(){
@@ -412,7 +428,6 @@ for(var ui=0;ui<unitBtns.length;ui++){(function(btn){
       /* 이미 선택된 버튼 클릭 시 선택 해제 */
       btn.className='mode-btn';
       selectedUnit='';
-      volumeInput.placeholder='용량';
       volumeInput.step='10';
       if(volUnitEl)volUnitEl.textContent='ml';
       try{localStorage.setItem('selectedUnit','');}catch(e){}
@@ -424,14 +439,15 @@ for(var ui=0;ui<unitBtns.length;ui++){(function(btn){
       btn.className='mode-btn active';
       selectedUnit=clickedUnit;
       if(selectedUnit==='min'){
-        volumeInput.placeholder='시간';volumeInput.step='5';
+        volumeInput.step='5';
         if(volUnitEl)volUnitEl.textContent='min';
       }else{
-        volumeInput.placeholder='용량';volumeInput.step='10';
+        volumeInput.step='10';
         if(volUnitEl)volUnitEl.textContent='ml';
       }
       try{localStorage.setItem('selectedUnit',selectedUnit);}catch(e){}
     }
+    updateVolumeInputState();
   });
 })(unitBtns[ui]);}
 
@@ -944,17 +960,17 @@ if(savedUnit){
     if(unitBtns[i].getAttribute('data-unit')===savedUnit){
       unitBtns[i].className='mode-btn active';
       if(savedUnit==='min'){
-        volumeInput.placeholder='시간';
         volumeInput.step='5';
         if(volUnitEl)volUnitEl.textContent='min';
       }else{
-        volumeInput.placeholder='용량';
         volumeInput.step='10';
         if(volUnitEl)volUnitEl.textContent='ml';
       }
     }
   }
 }
+
+updateVolumeInputState();
 
 if(savedPoop==='1'){
   poopActive=true;
@@ -1208,9 +1224,14 @@ function parseWithGPT(transcript, callback){
   var now = new Date();
   var currentHour = now.getHours();
   var currentMinute = now.getMinutes();
+  var roundedMinute = Math.round(currentMinute / 5) * 5;
+  if(roundedMinute === 60){
+    roundedMinute = 0;
+    currentHour = (currentHour + 1) % 24;
+  }
   
   var prompt = '다음 음성 텍스트에서 수유 기록 정보를 추출해주세요.\n\n';
-  prompt += '현재 시각: '+currentHour+'시 '+currentMinute+'분\n';
+  prompt += '현재 시각: '+currentHour+'시 '+roundedMinute+'분 (5분 단위 반올림)\n';
   prompt += '아기 이름: "'+names.first+'" (첫째), "'+names.second+'" (둘째), "둘 다"\n';
   prompt += '음성 텍스트: "'+transcript+'"\n\n';
   prompt += 'JSON 형식으로만 응답해주세요:\n';
@@ -1230,9 +1251,10 @@ function parseWithGPT(transcript, callback){
   prompt += '- 시간이 없으면 hour와 minute를 null로 설정\n';
   prompt += '- 분은 5분 단위로 반올림\n';
   prompt += '- 상대 시간 처리:\n';
-  prompt += '  * "30분 전", "1시간 전" 등은 현재 시각에서 계산\n';
-  prompt += '  * "아까", "조금 전"은 현재 시각 그대로 사용\n';
-  prompt += '  * 예: 현재 15시 40분일 때 "30분 전"은 15시 10분';
+  prompt += '  * "지금", "방금", "아까", "조금 전"은 현재 시각('+currentHour+'시 '+roundedMinute+'분) 사용\n';
+  prompt += '  * "30분 전", "1시간 전" 등은 현재 시각에서 계산하여 5분 단위로 반올림\n';
+  prompt += '  * 예: 현재 15시 40분일 때 "30분 전"은 15시 10분\n';
+  prompt += '  * 예: 현재 15시 33분일 때 "지금"은 15시 35분';
   
   _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
   
