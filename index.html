@@ -1237,8 +1237,10 @@ function parseWithGPT(transcript, callback){
   prompt += 'JSON 형식으로만 응답해주세요:\n';
   prompt += '{\n';
   prompt += '  "baby": "1" 또는 "2" 또는 "both" (아기 선택),\n';
-  prompt += '  "hour": 시간 (0-23),\n';
-  prompt += '  "minute": 분 (0, 5, 10, ..., 55),\n';
+  prompt += '  "hour": 시간 (0-23) 또는 null,\n';
+  prompt += '  "minute": 분 (0-59) 또는 null,\n';
+  prompt += '  "relativeMinutes": "N분 전"의 N 숫자 또는 null,\n';
+  prompt += '  "relativeHours": "N시간 전"의 N 숫자 또는 null,\n';
   prompt += '  "unit": "ml" 또는 "min" 또는 null,\n';
   prompt += '  "volume": 숫자 또는 null,\n';
   prompt += '  "poop": true 또는 false\n';
@@ -1248,21 +1250,13 @@ function parseWithGPT(transcript, callback){
   prompt += '- "첫째"는 baby="1", "둘째"는 baby="2", "둘 다"/"모두"는 baby="both"\n';
   prompt += '- 분유/ml이면 unit="ml", 모유/분이면 unit="min"\n';
   prompt += '- 똥/응가/대변이 언급되면 poop=true\n';
-  prompt += '- 시간이 없으면 hour와 minute를 null로 설정\n';
-  prompt += '- 분은 5분 단위로 반올림\n';
-  var totalMinutes = currentHour * 60 + roundedMinute;
-  prompt += '- 상대 시간 처리:\n';
-  prompt += '  * 현재 시각: '+currentHour+'시 '+roundedMinute+'분 (총 '+totalMinutes+'분)\n';
-  prompt += '  * "지금", "방금", "아까" → hour='+currentHour+', minute='+roundedMinute+'\n';
-  prompt += '  * "N분 전" 계산법:\n';
-  prompt += '    1. 총분 = '+totalMinutes+' - N\n';
-  prompt += '    2. hour = Math.floor(총분 / 60)\n';
-  prompt += '    3. minute = Math.round((총분 % 60) / 5) * 5\n';
-  prompt += '    4. minute가 60이면 hour+1, minute=0\n';
-  prompt += '  * 예시:\n';
-  prompt += '    - "10분 전" → 총분='+(totalMinutes-10)+' → hour='+Math.floor((totalMinutes-10)/60)+', minute='+Math.round(((totalMinutes-10)%60)/5)*5+'\n';
-  prompt += '    - "43분 전" → 총분='+(totalMinutes-43)+' → hour='+Math.floor((totalMinutes-43)/60)+', minute='+Math.round(((totalMinutes-43)%60)/5)*5+'\n';
-  prompt += '  * "N시간 전" → hour에서 N을 빼기, minute는 그대로';
+  prompt += '- 시간 처리:\n';
+  prompt += '  * 절대 시간("3시 30분", "오후 2시") → hour와 minute에 직접 입력, relativeMinutes=null, relativeHours=null\n';
+  prompt += '  * "지금", "방금", "아까" → hour='+currentHour+', minute='+roundedMinute+', relativeMinutes=null, relativeHours=null\n';
+  prompt += '  * "N분 전" (예: "19분 전", "43분 전") → hour=null, minute=null, relativeMinutes=N (숫자만 추출)\n';
+  prompt += '  * "N시간 전" (예: "1시간 전", "2시간 전") → hour=null, minute=null, relativeHours=N (숫자만 추출)\n';
+  prompt += '  * 중요: "19분 전"이면 relativeMinutes=19, "43분 전"이면 relativeMinutes=43\n';
+  prompt += '- 분은 항상 5분 단위로 반올림';
   
   _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
   
@@ -1450,6 +1444,13 @@ function startVoiceRecording(){
 
 function displayAIResult(parsed){
   var now = new Date();
+  var currentHour = now.getHours();
+  var currentMinute = now.getMinutes();
+  var roundedMinute = Math.round(currentMinute / 5) * 5;
+  if(roundedMinute === 60){
+    roundedMinute = 0;
+    currentHour = (currentHour + 1) % 24;
+  }
   
   if(parsed.baby){
     aiBabySelect.value = parsed.baby;
@@ -1457,13 +1458,37 @@ function displayAIResult(parsed){
     aiBabySelect.value = selectedBaby;
   }
   
-  if(parsed.hour !== null && parsed.minute !== null){
-    aiHourSelect.value = pad2(parsed.hour);
-    aiMinuteSelect.value = pad2(parsed.minute);
-  } else {
-    aiHourSelect.value = pad2(now.getHours());
-    aiMinuteSelect.value = pad2(Math.floor(now.getMinutes()/5)*5);
+  var finalHour = currentHour;
+  var finalMinute = roundedMinute;
+  
+  if(parsed.relativeMinutes !== null && parsed.relativeMinutes !== undefined){
+    _log('AI-CALC: relative minutes detected: '+parsed.relativeMinutes);
+    var totalMinutes = currentHour * 60 + roundedMinute - parsed.relativeMinutes;
+    if(totalMinutes < 0) totalMinutes += 24 * 60;
+    finalHour = Math.floor(totalMinutes / 60) % 24;
+    var tempMinute = totalMinutes % 60;
+    finalMinute = Math.round(tempMinute / 5) * 5;
+    if(finalMinute === 60){
+      finalMinute = 0;
+      finalHour = (finalHour + 1) % 24;
+    }
+    _log('AI-CALC: '+parsed.relativeMinutes+'분 전 → '+finalHour+'시 '+finalMinute+'분');
+  } else if(parsed.relativeHours !== null && parsed.relativeHours !== undefined){
+    _log('AI-CALC: relative hours detected: '+parsed.relativeHours);
+    finalHour = (currentHour - parsed.relativeHours + 24) % 24;
+    finalMinute = roundedMinute;
+    _log('AI-CALC: '+parsed.relativeHours+'시간 전 → '+finalHour+'시 '+finalMinute+'분');
+  } else if(parsed.hour !== null && parsed.minute !== null){
+    finalHour = parsed.hour;
+    finalMinute = Math.round(parsed.minute / 5) * 5;
+    if(finalMinute === 60){
+      finalMinute = 0;
+      finalHour = (finalHour + 1) % 24;
+    }
   }
+  
+  aiHourSelect.value = pad2(finalHour);
+  aiMinuteSelect.value = pad2(finalMinute);
   
   if(parsed.unit){
     aiUnitSelect.value = parsed.unit;
