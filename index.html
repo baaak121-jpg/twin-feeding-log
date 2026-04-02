@@ -12,7 +12,7 @@
 :root{--bg:#faf8f5;--card:#fff;--primary:#e8b4bc;--primary-dark:#d4969e;--accent:#a8c5d4;--text:#3d3d3d;--text-soft:#777;--border:#eee;--shadow:rgba(0,0,0,.06)}*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:1rem;line-height:1.5;-webkit-tap-highlight-color:transparent}.app{max-width:480px;margin:0 auto}
 header{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:1rem}header h1{font-size:1.4rem;font-weight:700}
 .btn-reload{padding:.3rem .7rem;font-size:.75rem;font-family:inherit;border:1px solid #c0c0c0;border-radius:6px;background:linear-gradient(to bottom,#f8f8f8,#e8e8e8);color:#555;cursor:pointer;white-space:nowrap;transition:all .15s;box-shadow:0 1px 2px rgba(0,0,0,.08)}.btn-reload:hover{background:linear-gradient(to bottom,#eee,#ddd);color:#333;border-color:#aaa}.btn-reload:active{transform:scale(.96);box-shadow:none}
-.top-bar{display:flex;align-items:center;gap:.4rem;margin-bottom:1rem;padding:.55rem .75rem;background:var(--card);border-radius:12px;box-shadow:0 2px 12px var(--shadow);flex-wrap:nowrap}
+.top-bar,.api-key-bar{display:flex;align-items:center;gap:.4rem;margin-bottom:1rem;padding:.55rem .75rem;background:var(--card);border-radius:12px;box-shadow:0 2px 12px var(--shadow);flex-wrap:nowrap}.api-key-input{flex:1;min-width:0;padding:.4rem .5rem;font-size:.85rem;border:1px solid var(--border);border-radius:8px;font-family:inherit;letter-spacing:.05rem}
 .code-wrap{position:relative;flex-shrink:0}.code-wrap .code-label{position:absolute;top:-.4rem;left:50%;transform:translateX(-50%);font-size:.55rem;color:var(--text-soft);background:var(--card);padding:0 .25rem;white-space:nowrap;pointer-events:none;z-index:1}.code-wrap .code-input{width:4.5rem;padding:.4rem .3rem;font-size:1rem;text-align:center;border:1px solid var(--border);border-radius:8px;font-family:inherit;letter-spacing:.2rem}
 .top-bar .btn-code{padding:.4rem .6rem;font-size:.8rem;font-family:inherit;border:none;border-radius:8px;background:#888;color:#fff;cursor:pointer;white-space:nowrap;transition:all .15s}.top-bar .btn-code:hover{background:#777}.top-bar .btn-code.connected{background:#5a9;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.15)}.top-bar .btn-code.connected:hover{background:#498}
 .code-status{font-size:.7rem;color:var(--text-soft);min-width:0;white-space:nowrap}
@@ -67,6 +67,14 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
     <button type="button" class="btn-date-nav" id="btn-prev-day" title="이전 날">◀</button>
     <input type="date" class="date-input" id="log-date">
     <button type="button" class="btn-date-nav" id="btn-next-day" title="다음 날">▶</button>
+  </div>
+  <div class="api-key-bar">
+    <div class="code-wrap">
+      <span class="code-label">OpenAI API Key</span>
+      <input type="password" class="api-key-input" id="openai-api-key" placeholder="sk-...">
+    </div>
+    <button type="button" class="btn-code" id="btn-api-save">저장</button>
+    <span class="code-status" id="api-status"></span>
   </div>
   <!-- 이름 변경 모달 -->
   <div class="name-modal-overlay" id="name-modal">
@@ -272,6 +280,12 @@ firebase.initializeApp({
 });
 var db = firebase.database();
 _log('B: firebase OK');
+
+/* ── OpenAI API Key ── */
+var openaiApiKey = '';
+var apiKeyInput = document.getElementById('openai-api-key');
+var btnApiSave = document.getElementById('btn-api-save');
+var apiStatusEl = document.getElementById('api-status');
 
 /* ── Family Code ── */
 var familyCode = '';
@@ -788,6 +802,29 @@ disconnectModal.addEventListener('click',function(e){
   if(e.target===disconnectModal)disconnectModal.className='name-modal-overlay';
 });
 
+/* OpenAI API Key 저장/불러오기 */
+try{openaiApiKey=localStorage.getItem('openaiApiKey')||'';}catch(e){}
+if(openaiApiKey){
+  apiKeyInput.value=openaiApiKey;
+  apiStatusEl.textContent='저장됨';
+}
+
+btnApiSave.addEventListener('click',function(){
+  var key=apiKeyInput.value.trim();
+  if(!key){
+    alert('API 키를 입력해주세요.');
+    return;
+  }
+  if(!key.startsWith('sk-')){
+    alert('올바른 OpenAI API 키 형식이 아닙니다. (sk-로 시작해야 함)');
+    return;
+  }
+  openaiApiKey=key;
+  try{localStorage.setItem('openaiApiKey',key);}catch(e){}
+  apiStatusEl.textContent='저장됨';
+  _log('API-KEY: saved');
+});
+
 /* 자동 연결 */
 var savedCode='';
 try{savedCode=localStorage.getItem('familyCode')||'';}catch(e){_log('ERR: localStorage read failed');}
@@ -1126,7 +1163,10 @@ btnNextWeek.addEventListener('click', function(){
   renderStats();
 });
 
-/* ── AI Voice Recognition ── */
+/* ── AI Voice Recognition with OpenAI ── */
+var mediaRecorder = null;
+var audioChunks = [];
+
 function initAISelects(){
   aiHourSelect.innerHTML = '';
   aiMinuteSelect.innerHTML = '';
@@ -1144,150 +1184,209 @@ function initAISelects(){
   }
 }
 
-function parseVoiceInput(transcript){
-  _log('AI-PARSE: '+transcript);
-  var result = {
-    baby: null,
-    hour: null,
-    minute: null,
-    unit: null,
-    volume: null,
-    poop: false
-  };
-  
-  var names = getDisplayNames();
-  var text = transcript.replace(/\s+/g, '');
-  
-  if(text.indexOf(names.first)>=0 || text.indexOf('첫째')>=0){
-    result.baby = '1';
-  } else if(text.indexOf(names.second)>=0 || text.indexOf('둘째')>=0){
-    result.baby = '2';
-  } else if(text.indexOf('둘다')>=0 || text.indexOf('둘 다')>=0 || text.indexOf('모두')>=0){
-    result.baby = 'both';
-  }
-  
-  var timeMatch = transcript.match(/(\d+)\s*시\s*(\d+)\s*분/);
-  if(!timeMatch){
-    timeMatch = transcript.match(/(\d+)\s*시/);
-    if(timeMatch){
-      result.hour = parseInt(timeMatch[1]);
-      result.minute = 0;
-    }
-  } else {
-    result.hour = parseInt(timeMatch[1]);
-    result.minute = parseInt(timeMatch[2]);
-  }
-  
-  if(result.minute !== null){
-    result.minute = Math.round(result.minute / 5) * 5;
-    if(result.minute >= 60) result.minute = 55;
-  }
-  
-  if(transcript.indexOf('분유')>=0 || transcript.indexOf('밀크')>=0 || transcript.indexOf('ml')>=0 || transcript.indexOf('엠엘')>=0){
-    result.unit = 'ml';
-  } else if(transcript.indexOf('모유')>=0 || transcript.indexOf('수유')>=0 || transcript.indexOf('분')>=0){
-    result.unit = 'min';
-  }
-  
-  var volumeMatch = transcript.match(/(\d+)\s*(ml|엠엘|밀리|분)/);
-  if(volumeMatch){
-    result.volume = parseInt(volumeMatch[1]);
-    if(volumeMatch[2]==='분' && result.unit!=='min'){
-      result.unit = 'min';
-    }
-  }
-  
-  if(transcript.indexOf('똥')>=0 || transcript.indexOf('응가')>=0 || transcript.indexOf('대변')>=0){
-    result.poop = true;
-  }
-  
-  return result;
-}
-
-function startVoiceRecognition(){
-  if(!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)){
-    alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
+function parseWithGPT(transcript, callback){
+  if(!openaiApiKey){
+    alert('OpenAI API 키를 먼저 저장해주세요.');
     return;
   }
   
-  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SpeechRecognition();
-  recognition.lang = 'ko-KR';
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  var names = getDisplayNames();
+  var prompt = '다음 음성 텍스트에서 수유 기록 정보를 추출해주세요.\n\n';
+  prompt += '아기 이름: "'+names.first+'" (첫째), "'+names.second+'" (둘째), "둘 다"\n';
+  prompt += '음성 텍스트: "'+transcript+'"\n\n';
+  prompt += 'JSON 형식으로만 응답해주세요:\n';
+  prompt += '{\n';
+  prompt += '  "baby": "1" 또는 "2" 또는 "both" (아기 선택),\n';
+  prompt += '  "hour": 시간 (0-23),\n';
+  prompt += '  "minute": 분 (0, 5, 10, ..., 55),\n';
+  prompt += '  "unit": "ml" 또는 "min" 또는 null,\n';
+  prompt += '  "volume": 숫자 또는 null,\n';
+  prompt += '  "poop": true 또는 false\n';
+  prompt += '}\n\n';
+  prompt += '규칙:\n';
+  prompt += '- 아기 이름이 "'+names.first+'"이면 baby="1", "'+names.second+'"이면 baby="2"\n';
+  prompt += '- "첫째"는 baby="1", "둘째"는 baby="2", "둘 다"/"모두"는 baby="both"\n';
+  prompt += '- 분유/ml이면 unit="ml", 모유/분이면 unit="min"\n';
+  prompt += '- 똥/응가/대변이 언급되면 poop=true\n';
+  prompt += '- 시간이 없으면 현재 시간 사용\n';
+  prompt += '- 분은 5분 단위로 반올림';
+  
+  _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
+  
+  fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + openaiApiKey
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [{role: 'user', content: prompt}],
+      temperature: 0.3,
+      max_tokens: 200
+    })
+  })
+  .then(function(res){
+    if(!res.ok){
+      throw new Error('GPT API error: '+res.status);
+    }
+    return res.json();
+  })
+  .then(function(data){
+    _log('GPT-RESPONSE: '+JSON.stringify(data));
+    var content = data.choices[0].message.content;
+    var jsonMatch = content.match(/\{[\s\S]*\}/);
+    if(jsonMatch){
+      var parsed = JSON.parse(jsonMatch[0]);
+      callback(parsed);
+    } else {
+      throw new Error('JSON parsing failed');
+    }
+  })
+  .catch(function(err){
+    _log('GPT-ERROR: '+err.message);
+    alert('GPT 파싱 오류: '+err.message);
+    aiModal.classList.remove('open');
+  });
+}
+
+function transcribeWithWhisper(audioBlob, callback){
+  if(!openaiApiKey){
+    alert('OpenAI API 키를 먼저 저장해주세요.');
+    return;
+  }
+  
+  var formData = new FormData();
+  formData.append('file', audioBlob, 'audio.webm');
+  formData.append('model', 'whisper-1');
+  formData.append('language', 'ko');
+  
+  _log('WHISPER: sending audio...');
+  
+  fetch('https://api.openai.com/v1/audio/transcriptions', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + openaiApiKey
+    },
+    body: formData
+  })
+  .then(function(res){
+    if(!res.ok){
+      throw new Error('Whisper API error: '+res.status);
+    }
+    return res.json();
+  })
+  .then(function(data){
+    _log('WHISPER-RESULT: '+data.text);
+    callback(data.text);
+  })
+  .catch(function(err){
+    _log('WHISPER-ERROR: '+err.message);
+    alert('음성 인식 오류: '+err.message);
+    aiModal.classList.remove('open');
+  });
+}
+
+function startVoiceRecording(){
+  if(!openaiApiKey){
+    alert('OpenAI API 키를 먼저 저장해주세요.');
+    return;
+  }
+  
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    alert('이 브라우저는 음성 녹음을 지원하지 않습니다.');
+    return;
+  }
   
   aiModal.classList.add('open');
   aiModalTitle.textContent = '음성 인식 중...';
   aiListening.classList.remove('hidden');
   aiResult.classList.add('hidden');
   aiButtons.classList.add('hidden');
+  audioChunks = [];
   
-  recognition.onresult = function(event){
-    var transcript = event.results[0][0].transcript;
-    _log('AI-RESULT: '+transcript);
+  navigator.mediaDevices.getUserMedia({audio: true})
+  .then(function(stream){
+    _log('RECORD: started');
+    mediaRecorder = new MediaRecorder(stream);
     
-    var parsed = parseVoiceInput(transcript);
+    mediaRecorder.ondataavailable = function(e){
+      audioChunks.push(e.data);
+    };
     
-    var now = new Date();
-    if(parsed.baby) aiBabySelect.value = parsed.baby;
-    else aiBabySelect.value = selectedBaby;
+    mediaRecorder.onstop = function(){
+      _log('RECORD: stopped, chunks='+audioChunks.length);
+      var audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
+      stream.getTracks().forEach(function(track){track.stop();});
+      
+      transcribeWithWhisper(audioBlob, function(transcript){
+        parseWithGPT(transcript, function(parsed){
+          displayAIResult(parsed);
+        });
+      });
+    };
     
-    if(parsed.hour !== null && parsed.minute !== null){
-      aiHourSelect.value = pad2(parsed.hour);
-      aiMinuteSelect.value = pad2(parsed.minute);
-    } else {
-      aiHourSelect.value = pad2(now.getHours());
-      aiMinuteSelect.value = pad2(Math.floor(now.getMinutes()/5)*5);
-    }
+    mediaRecorder.start();
     
-    if(parsed.unit){
-      aiUnitSelect.value = parsed.unit;
-      aiVolumeField.style.display = 'flex';
-    } else if(parsed.poop && !parsed.volume){
-      aiUnitSelect.value = 'none';
-      aiVolumeField.style.display = 'none';
-    } else {
-      aiUnitSelect.value = selectedUnit || 'ml';
-      aiVolumeField.style.display = 'flex';
-    }
-    
-    if(parsed.volume){
-      aiVolumeInput.value = parsed.volume;
-    } else {
-      aiVolumeInput.value = volumeInput.value || '';
-    }
-    
-    aiPoopCheckbox.checked = parsed.poop;
-    
-    aiModalTitle.textContent = '인식 결과 확인';
-    aiListening.classList.add('hidden');
-    aiResult.classList.remove('hidden');
-    aiButtons.classList.remove('hidden');
-  };
-  
-  recognition.onerror = function(event){
-    _log('AI-ERROR: '+event.error);
+    setTimeout(function(){
+      if(mediaRecorder && mediaRecorder.state === 'recording'){
+        mediaRecorder.stop();
+      }
+    }, 5000);
+  })
+  .catch(function(err){
+    _log('RECORD-ERROR: '+err.message);
+    alert('마이크 접근 오류: '+err.message);
     aiModal.classList.remove('open');
-    alert('음성 인식 오류: ' + event.error);
-  };
+  });
+}
+
+function displayAIResult(parsed){
+  var now = new Date();
   
-  recognition.onend = function(){
-    _log('AI-END');
-  };
+  if(parsed.baby) aiBabySelect.value = parsed.baby;
+  else aiBabySelect.value = selectedBaby;
   
-  try {
-    recognition.start();
-    _log('AI-START');
-  } catch(e){
-    _log('AI-START-ERROR: '+e.message);
-    alert('음성 인식 시작 실패: ' + e.message);
-    aiModal.classList.remove('open');
+  if(parsed.hour !== null && parsed.minute !== null){
+    aiHourSelect.value = pad2(parsed.hour);
+    aiMinuteSelect.value = pad2(parsed.minute);
+  } else {
+    aiHourSelect.value = pad2(now.getHours());
+    aiMinuteSelect.value = pad2(Math.floor(now.getMinutes()/5)*5);
   }
+  
+  if(parsed.unit){
+    aiUnitSelect.value = parsed.unit;
+    aiVolumeField.style.display = 'flex';
+  } else if(parsed.poop && !parsed.volume){
+    aiUnitSelect.value = 'none';
+    aiVolumeField.style.display = 'none';
+  } else {
+    aiUnitSelect.value = selectedUnit || 'ml';
+    aiVolumeField.style.display = 'flex';
+  }
+  
+  if(parsed.volume){
+    aiVolumeInput.value = parsed.volume;
+  } else {
+    aiVolumeInput.value = volumeInput.value || '';
+  }
+  
+  aiPoopCheckbox.checked = parsed.poop || false;
+  
+  aiModalTitle.textContent = '인식 결과 확인';
+  aiListening.classList.add('hidden');
+  aiResult.classList.remove('hidden');
+  aiButtons.classList.remove('hidden');
 }
 
 btnAI.addEventListener('click', function(){
+  if(!openaiApiKey){
+    alert('OpenAI API 키를 먼저 저장해주세요.');
+    return;
+  }
   initAISelects();
-  startVoiceRecognition();
+  startVoiceRecording();
 });
 
 aiUnitSelect.addEventListener('change', function(){
@@ -1304,7 +1403,7 @@ aiCancelBtn.addEventListener('click', function(){
 });
 
 aiRetryBtn.addEventListener('click', function(){
-  startVoiceRecognition();
+  startVoiceRecording();
 });
 
 aiConfirmBtn.addEventListener('click', function(){
