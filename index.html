@@ -125,12 +125,12 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
             <line x1="8" y1="23" x2="16" y2="23"></line>
           </svg>
         </button>
-        <p class="ai-hint" id="ai-hint">버튼을 눌러 음성을 입력하세요</p>
+        <p class="ai-hint" id="ai-hint">버튼을 탭하여 녹음 시작 → 다시 탭하여 종료</p>
         <div class="ai-examples">
           <p>"<span class="ex-baby-first">첫째</span> 오후 3시 30분에 분유 150 기록해줘"</p>
-          <p>"<span class="ex-baby-second">둘째</span> 30분 전에 모유 20분 먹었어"</p>
-          <p>"둘 다 똥"</p>
-          <p class="ex-note">* 시간은 오전/오후, 24시간, 또는 "30분 전" 형식으로 말씀해주세요</p>
+          <p>"<span class="ex-baby-second">둘째</span> 10분 전에 모유 20분 먹었어"</p>
+          <p>"둘 다 5분 전에 똥"</p>
+          <p class="ex-note">* 시간: 오전/오후, 24시간, "5분 전", "30분 전", "1시간 전" 등</p>
         </div>
       </div>
       <div class="ai-result-section" id="ai-result-section">
@@ -1250,11 +1250,14 @@ function parseWithGPT(transcript, callback){
   prompt += '- 똥/응가/대변이 언급되면 poop=true\n';
   prompt += '- 시간이 없으면 hour와 minute를 null로 설정\n';
   prompt += '- 분은 5분 단위로 반올림\n';
-  prompt += '- 상대 시간 처리:\n';
-  prompt += '  * "지금", "방금", "아까", "조금 전"은 현재 시각('+currentHour+'시 '+roundedMinute+'분) 사용\n';
-  prompt += '  * "30분 전", "1시간 전" 등은 현재 시각에서 계산하여 5분 단위로 반올림\n';
-  prompt += '  * 예: 현재 15시 40분일 때 "30분 전"은 15시 10분\n';
-  prompt += '  * 예: 현재 15시 33분일 때 "지금"은 15시 35분';
+  prompt += '- 상대 시간 처리 (현재: '+currentHour+'시 '+roundedMinute+'분):\n';
+  prompt += '  * "지금", "방금", "아까"는 현재 시각 사용\n';
+  prompt += '  * "5분 전"은 '+Math.floor((currentHour*60+roundedMinute-5)/60)+'시 '+((roundedMinute-5+60)%60)+'분\n';
+  prompt += '  * "10분 전"은 '+Math.floor((currentHour*60+roundedMinute-10)/60)+'시 '+((roundedMinute-10+60)%60)+'분\n';
+  prompt += '  * "15분 전"은 '+Math.floor((currentHour*60+roundedMinute-15)/60)+'시 '+((roundedMinute-15+60)%60)+'분\n';
+  prompt += '  * "30분 전"은 '+Math.floor((currentHour*60+roundedMinute-30)/60)+'시 '+((roundedMinute-30+60)%60)+'분\n';
+  prompt += '  * "1시간 전"은 '+((currentHour-1+24)%24)+'시 '+roundedMinute+'분\n';
+  prompt += '  * 다른 상대 시간도 위와 같이 현재 시각에서 계산';
   
   _log('GPT-PROMPT: '+prompt.substring(0,100)+'...');
   
@@ -1375,61 +1378,9 @@ function startVoiceRecording(){
       stream.getTracks().forEach(function(track){track.stop();});
       isRecording = false;
       aiMicBtn.classList.remove('recording');
-      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+      aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
       return;
     }
-    
-    var silenceTimer = null;
-    var lastSoundTime = Date.now();
-    var hasSound = false;
-    
-    var audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    var analyser = audioContext.createAnalyser();
-    var microphone = audioContext.createMediaStreamSource(stream);
-    var dataArray = new Uint8Array(analyser.frequencyBinCount);
-    
-    microphone.connect(analyser);
-    analyser.fftSize = 2048;
-    
-    function checkAudioLevel(){
-      if(!isRecording) return;
-      
-      analyser.getByteTimeDomainData(dataArray);
-      var sum = 0;
-      for(var i=0; i<dataArray.length; i++){
-        var val = Math.abs(dataArray[i] - 128);
-        sum += val;
-      }
-      var average = sum / dataArray.length;
-      
-      if(average > 3){
-        lastSoundTime = Date.now();
-        if(!hasSound){
-          hasSound = true;
-          _log('RECORD: sound detected, extending time...');
-        }
-        if(silenceTimer){
-          clearTimeout(silenceTimer);
-          silenceTimer = null;
-        }
-      }
-      
-      if(hasSound && !silenceTimer && Date.now() - lastSoundTime > 1000){
-        _log('RECORD: silence detected, stopping in 2 seconds...');
-        silenceTimer = setTimeout(function(){
-          if(mediaRecorder && mediaRecorder.state === 'recording'){
-            _log('RECORD: stopping due to silence');
-            mediaRecorder.stop();
-          }
-        }, 2000);
-      }
-      
-      if(isRecording){
-        requestAnimationFrame(checkAudioLevel);
-      }
-    }
-    
-    checkAudioLevel();
     
     mediaRecorder.ondataavailable = function(e){
       _log('RECORD: data available, size='+e.data.size);
@@ -1438,8 +1389,6 @@ function startVoiceRecording(){
     
     mediaRecorder.onstop = function(){
       _log('RECORD: stopped, chunks='+audioChunks.length);
-      if(silenceTimer) clearTimeout(silenceTimer);
-      audioContext.close();
       
       var audioBlob = new Blob(audioChunks, {type: 'audio/webm'});
       _log('RECORD: blob created, size='+audioBlob.size);
@@ -1452,7 +1401,7 @@ function startVoiceRecording(){
       if(audioBlob.size === 0){
         _log('RECORD-ERROR: empty audio blob');
         alert('녹음된 오디오가 없습니다. 다시 시도해주세요.');
-        aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+        aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
         return;
       }
       
@@ -1466,45 +1415,31 @@ function startVoiceRecording(){
     mediaRecorder.onerror = function(e){
       _log('RECORD-ERROR: '+e.error);
       alert('녹음 오류: '+e.error);
-      if(silenceTimer) clearTimeout(silenceTimer);
-      audioContext.close();
       isRecording = false;
       aiMicBtn.classList.remove('recording');
-      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+      aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
     };
     
     try {
       mediaRecorder.start();
       _log('RECORD: started successfully');
+      aiHint.textContent = '녹음 중... (다시 탭하여 종료)';
     } catch(e){
       _log('RECORD-START-ERROR: '+e.message);
       alert('녹음 시작 실패: '+e.message);
-      if(silenceTimer) clearTimeout(silenceTimer);
-      audioContext.close();
       stream.getTracks().forEach(function(track){track.stop();});
       isRecording = false;
       aiMicBtn.classList.remove('recording');
-      aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+      aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
       return;
     }
-    
-    setTimeout(function(){
-      if(mediaRecorder && mediaRecorder.state === 'recording'){
-        if(!hasSound){
-          _log('RECORD: stopping - no sound detected after 5 seconds');
-          mediaRecorder.stop();
-        } else {
-          _log('RECORD: sound detected, continuing...');
-        }
-      }
-    }, 5000);
   })
   .catch(function(err){
     _log('RECORD-ERROR: '+err.name+' - '+err.message);
     alert('마이크 접근 오류: '+err.message);
     isRecording = false;
     aiMicBtn.classList.remove('recording');
-    aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+    aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
   });
 }
 
