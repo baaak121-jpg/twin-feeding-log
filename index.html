@@ -32,8 +32,9 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
 .add-row{display:flex;gap:.3rem;margin-bottom:1.1rem;margin-top:.2rem;align-items:center}
 .time-picker{display:flex;align-items:center;gap:.15rem;flex:0 0 auto}.time-picker select{padding:.6rem .25rem;font-size:.88rem;border:1px solid var(--border);border-radius:6px;font-family:inherit;background:var(--card);color:var(--text)}.time-picker #feeding-hour,.time-picker #feeding-minute{width:2.6rem;text-align:center;text-align-last:center}.time-picker .time-sep{font-weight:600;color:var(--text-soft);font-size:1rem}
 .vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-wrap #feeding-volume:disabled{background:#e8e8e8;color:#999;cursor:not-allowed;border-color:#ddd}.vol-wrap #feeding-volume:disabled::placeholder{color:#aaa}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
-.feed-mode-group{display:flex;align-items:stretch;gap:.28rem;flex-shrink:0}.feed-type-select{flex-shrink:0;box-sizing:border-box;min-width:3.15rem;width:3.15rem;height:2.55rem;padding:.4rem .25rem;font-size:1.25rem;line-height:1.1;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none;text-align:center;text-align-last:center;cursor:pointer}.nap-mode-btn{flex-shrink:0;box-sizing:border-box;min-width:3.15rem;width:3.15rem;height:2.55rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:1.25rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;display:flex;align-items:center;justify-content:center;font-family:inherit}.nap-mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 2px 6px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35);transform:translateY(-1px)}
-.poop-toggle{flex-shrink:0;box-sizing:border-box;min-width:2.85rem;height:2.55rem;padding:0 .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:1.05rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;display:flex;align-items:center;justify-content:center;font-family:inherit}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
+.feed-mode-group{display:flex;align-items:stretch;gap:.22rem;flex-shrink:0}.feed-mode-btn{flex-shrink:0;box-sizing:border-box;min-width:2.65rem;width:2.65rem;height:2.32rem;padding:0 .15rem;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit;position:relative}.feed-mode-btn .feed-mode-icons{display:inline-flex;align-items:flex-end;justify-content:center;gap:1px;line-height:1}.feed-mode-btn #feed-mode-icon{font-size:.92rem;line-height:1}.feed-mode-btn .feed-mode-chevron{font-size:.38rem;line-height:1;color:#888;padding-bottom:2px;font-weight:700}.feed-mode-btn.feed-active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 1px 4px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35)}.feed-mode-btn.feed-inactive{opacity:.42;background:var(--bg)}.nap-mode-btn{flex-shrink:0;box-sizing:border-box;min-width:2.65rem;width:2.65rem;height:2.32rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.92rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.nap-mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 1px 4px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35);transform:translateY(-1px)}.nap-mode-btn.nap-inactive{opacity:.42}
+.poop-toggle{flex-shrink:0;box-sizing:border-box;min-width:2.55rem;width:2.55rem;height:2.32rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.88rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
+.feed-picker-box{padding:1rem 1.1rem!important;max-width:300px}.feed-picker-title{font-size:.95rem;margin:0 0 .35rem;text-align:center}.feed-picker-hint{font-size:.72rem;color:var(--text-soft);margin:0 0 .75rem;text-align:center;line-height:1.4}.feed-picker-row{display:flex;gap:.5rem;margin-bottom:.75rem}.feed-picker-opt{flex:1;padding:.65rem .4rem;font-size:.85rem;font-family:inherit;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;line-height:1.3}.feed-picker-opt:active{transform:scale(.98)}.feed-picker-close{width:100%;padding:.55rem;font-size:.85rem;font-family:inherit;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer}
 .baby-tabs-wrap{margin-bottom:1.2rem}.baby-tabs{display:flex;gap:.5rem}.baby-btn{flex:1;padding:.6rem;font-size:.9rem;font-family:inherit;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer;transition:all .2s}.baby-btn:hover{opacity:.85}
 .baby-btn[data-baby="1"]{border-color:#a8c5d4;color:#5a8aa3}.baby-btn[data-baby="1"].active{background:linear-gradient(145deg,#9fc4d6,#7fadbf);color:#fff;box-shadow:0 4px 12px rgba(90,138,163,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#6a9ab5;transform:translateY(-1px)}
 .baby-btn[data-baby="2"]{border-color:#e8b4bc;color:#c4707e}.baby-btn[data-baby="2"].active{background:linear-gradient(145deg,#e5a5af,#cc8591);color:#fff;box-shadow:0 4px 12px rgba(196,112,126,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#b86578;transform:translateY(-1px)}
@@ -110,6 +111,18 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <button type="button" class="btn-yes" id="disconnect-yes">예</button>
         <button type="button" class="btn-no" id="disconnect-no">아니오</button>
       </div>
+    </div>
+  </div>
+  <!-- 분유/모유 선택 (수유 버튼 길게 누름) -->
+  <div class="name-modal-overlay" id="feed-picker-overlay">
+    <div class="name-modal feed-picker-box">
+      <h3 class="feed-picker-title">분유 / 모유</h3>
+      <p class="feed-picker-hint">▼ 표시 = 더 보기. 길게 눌러 여기서 고르세요.</p>
+      <div class="feed-picker-row">
+        <button type="button" class="feed-picker-opt" id="pick-feed-ml">🍼 분유 (ml)</button>
+        <button type="button" class="feed-picker-opt" id="pick-feed-min">🤱 모유 (분)</button>
+      </div>
+      <button type="button" class="feed-picker-close" id="feed-picker-close">닫기</button>
     </div>
   </div>
   <!-- AI 음성 인식 모달 -->
@@ -198,11 +211,10 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <span class="vol-unit" id="vol-unit">ml</span>
       </div>
       <div class="feed-mode-group">
-        <select id="feed-type" class="feed-type-select" aria-label="분유 또는 모유" title="분유 / 모유">
-          <option value="ml" selected>🍼</option>
-          <option value="min">🤱</option>
-        </select>
-        <button type="button" class="nap-mode-btn" id="btn-nap-mode" title="낮잠 (다시 누르면 해제)">😴</button>
+        <button type="button" class="feed-mode-btn feed-active" id="btn-feed-mode" aria-label="수유 선택. 길게 눌러 분유 또는 모유 고르기" title="한 번: 수유 · 길게: 분유/모유">
+          <span class="feed-mode-icons"><span id="feed-mode-icon">🍼</span><span class="feed-mode-chevron" aria-hidden="true">▼</span></span>
+        </button>
+        <button type="button" class="nap-mode-btn nap-inactive" id="btn-nap-mode" aria-label="낮잠" title="낮잠 (다시 누르면 수유로)">😴</button>
       </div>
       <button type="button" class="poop-toggle" id="btn-poop">💩</button>
     </div>
@@ -396,13 +408,25 @@ var mediaRecorder = null;
 var audioChunks = [];
 var isRecording = false;
 
-/* 🍼🤱 드롭다운 + 😴 토글, 공유 숫자 입력 + 똥 */
+/* 🍼🤱 수유 버튼(탭=수유 / 길게=선택) + 😴 낮잠 택1 + 똥 */
 var selectedFeedType = 'ml';
+var feedMlMin = 'ml';
 var poopActive = false;
-var feedTypeSelect = document.getElementById('feed-type');
+var btnFeedMode = document.getElementById('btn-feed-mode');
+var feedModeIcon = document.getElementById('feed-mode-icon');
 var btnNapMode = document.getElementById('btn-nap-mode');
 var btnPoop = document.getElementById('btn-poop');
 var volUnitEl = document.getElementById('vol-unit');
+var feedPickerOverlay = document.getElementById('feed-picker-overlay');
+var pickFeedMl = document.getElementById('pick-feed-ml');
+var pickFeedMin = document.getElementById('pick-feed-min');
+var feedPickerClose = document.getElementById('feed-picker-close');
+var FEED_LONG_PRESS_MS = 480;
+var feedLongPressTimer = null;
+var feedLongPressFired = false;
+var feedTouchStartY = 0;
+var feedTouchMoved = false;
+var feedLastTouchEnd = 0;
 
 var selectedBaby = '1';
 var allLogs = {};
@@ -443,27 +467,153 @@ function syncFeedVolumeUI(){
   }
 }
 
-feedTypeSelect.addEventListener('change',function(){
-  if(btnNapMode)btnNapMode.classList.remove('active');
-  selectedFeedType=feedTypeSelect.value||'ml';
+function persistFeedUiState(){
   try{
+    localStorage.setItem('feedMlMinChoice',feedMlMin);
     localStorage.setItem('selectedFeedType',selectedFeedType);
-    localStorage.setItem('feedMlMinChoice',feedTypeSelect.value||'ml');
   }catch(e){}
+}
+
+function updateFeedModeVisuals(){
+  if(feedModeIcon)feedModeIcon.textContent=feedMlMin==='ml'?'🍼':'🤱';
+  if(btnFeedMode){
+    btnFeedMode.classList.remove('feed-active','feed-inactive');
+    if(selectedFeedType==='nap')btnFeedMode.classList.add('feed-inactive');
+    else btnFeedMode.classList.add('feed-active');
+  }
+  if(btnNapMode){
+    btnNapMode.classList.remove('active','nap-inactive');
+    if(selectedFeedType==='nap')btnNapMode.classList.add('active');
+    else btnNapMode.classList.add('nap-inactive');
+  }
   syncFeedVolumeUI();
-});
+}
+
+function closeFeedPicker(){
+  if(feedPickerOverlay)feedPickerOverlay.className='name-modal-overlay';
+}
+
+function openFeedPicker(){
+  if(feedPickerOverlay)feedPickerOverlay.className='name-modal-overlay open';
+}
+
+function applyFeedMlMin(val){
+  if(val!=='ml'&&val!=='min')return;
+  feedMlMin=val;
+  selectedFeedType=val;
+  if(btnNapMode)btnNapMode.classList.remove('active');
+  updateFeedModeVisuals();
+  persistFeedUiState();
+  closeFeedPicker();
+}
+
+function feedModeShortTap(){
+  selectedFeedType=feedMlMin;
+  if(btnNapMode)btnNapMode.classList.remove('active');
+  updateFeedModeVisuals();
+  persistFeedUiState();
+}
+
+function clearFeedLongPressTimer(){
+  if(feedLongPressTimer){
+    clearTimeout(feedLongPressTimer);
+    feedLongPressTimer=null;
+  }
+}
+
+function bindFeedModeButton(){
+  if(!btnFeedMode)return;
+
+  btnFeedMode.oncontextmenu=function(e){e.preventDefault();return false;};
+
+  btnFeedMode.addEventListener('touchstart',function(e){
+    feedTouchMoved=false;
+    feedLongPressFired=false;
+    if(e.touches&&e.touches[0])feedTouchStartY=e.touches[0].clientY;
+    clearFeedLongPressTimer();
+    feedLongPressTimer=setTimeout(function(){
+      feedLongPressTimer=null;
+      feedLongPressFired=true;
+      openFeedPicker();
+    },FEED_LONG_PRESS_MS);
+  },{passive:true});
+
+  btnFeedMode.addEventListener('touchmove',function(e){
+    if(!e.touches||!e.touches[0])return;
+    if(Math.abs(e.touches[0].clientY-feedTouchStartY)>12)feedTouchMoved=true;
+    if(feedTouchMoved)clearFeedLongPressTimer();
+  },{passive:true});
+
+  btnFeedMode.addEventListener('touchend',function(){
+    clearFeedLongPressTimer();
+    if(feedLongPressFired){
+      feedLastTouchEnd=Date.now();
+      setTimeout(function(){feedLongPressFired=false;},300);
+      return;
+    }
+    if(feedTouchMoved)return;
+    feedLastTouchEnd=Date.now();
+    feedModeShortTap();
+  });
+
+  btnFeedMode.addEventListener('touchcancel',function(){
+    clearFeedLongPressTimer();
+  });
+
+  btnFeedMode.addEventListener('mousedown',function(){
+    feedLongPressFired=false;
+    clearFeedLongPressTimer();
+    feedLongPressTimer=setTimeout(function(){
+      feedLongPressTimer=null;
+      feedLongPressFired=true;
+      openFeedPicker();
+    },FEED_LONG_PRESS_MS);
+  });
+
+  btnFeedMode.addEventListener('mouseup',function(){
+    clearFeedLongPressTimer();
+    if(feedLongPressFired){
+      setTimeout(function(){feedLongPressFired=false;},100);
+      return;
+    }
+    feedLastTouchEnd=Date.now();
+    feedModeShortTap();
+  });
+
+  btnFeedMode.addEventListener('mouseleave',function(){
+    clearFeedLongPressTimer();
+  });
+
+  btnFeedMode.addEventListener('click',function(e){
+    if(Date.now()-feedLastTouchEnd<650){
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+}
+
+bindFeedModeButton();
+
+if(pickFeedMl)pickFeedMl.addEventListener('click',function(){applyFeedMlMin('ml');});
+if(pickFeedMin)pickFeedMin.addEventListener('click',function(){applyFeedMlMin('min');});
+if(feedPickerClose)feedPickerClose.addEventListener('click',function(){closeFeedPicker();});
+if(feedPickerOverlay){
+  feedPickerOverlay.addEventListener('click',function(e){
+    if(e.target===feedPickerOverlay)closeFeedPicker();
+  });
+}
 
 if(btnNapMode){
   btnNapMode.addEventListener('click',function(){
     if(selectedFeedType==='nap'){
-      selectedFeedType=feedTypeSelect.value||'ml';
+      selectedFeedType=feedMlMin;
       btnNapMode.classList.remove('active');
     }else{
       selectedFeedType='nap';
       btnNapMode.classList.add('active');
     }
-    try{localStorage.setItem('selectedFeedType',selectedFeedType);}catch(e){}
-    syncFeedVolumeUI();
+    updateFeedModeVisuals();
+    persistFeedUiState();
   });
 }
 
@@ -1001,19 +1151,15 @@ if(savedFeed!=='ml'&&savedFeed!=='min'&&savedFeed!=='nap')savedFeed='ml';
 var mlMinChoice='ml';
 try{mlMinChoice=localStorage.getItem('feedMlMinChoice')||'ml';}catch(e){}
 if(mlMinChoice!=='ml'&&mlMinChoice!=='min')mlMinChoice='ml';
-if(feedTypeSelect)feedTypeSelect.value=mlMinChoice;
+feedMlMin=mlMinChoice;
 
 selectedFeedType=savedFeed;
-if(selectedFeedType==='nap'){
-  if(btnNapMode)btnNapMode.classList.add('active');
-}else{
-  if(feedTypeSelect){
-    feedTypeSelect.value=selectedFeedType;
-    try{localStorage.setItem('feedMlMinChoice',selectedFeedType);}catch(e){}
-  }
+if(selectedFeedType!=='nap'){
+  feedMlMin=selectedFeedType;
+  try{localStorage.setItem('feedMlMinChoice',feedMlMin);}catch(e){}
 }
 
-syncFeedVolumeUI();
+updateFeedModeVisuals();
 
 if(savedPoop==='1'){
   poopActive=true;
@@ -1558,7 +1704,7 @@ function displayAIResult(parsed){
     aiUnitSelect.value = 'none';
     aiVolumeField.style.display = 'none';
   } else {
-    aiUnitSelect.value = selectedFeedType || 'ml';
+    aiUnitSelect.value = selectedFeedType==='nap' ? feedMlMin : (selectedFeedType || 'ml');
     aiVolumeField.style.display = 'flex';
   }
   
