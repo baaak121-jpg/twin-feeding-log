@@ -32,9 +32,9 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
 .add-row{display:flex;gap:.3rem;margin-bottom:1.1rem;margin-top:.2rem;align-items:center}
 .time-picker{display:flex;align-items:center;gap:.15rem;flex:0 0 auto}.time-picker select{padding:.6rem .25rem;font-size:.88rem;border:1px solid var(--border);border-radius:6px;font-family:inherit;background:var(--card);color:var(--text)}.time-picker #feeding-hour,.time-picker #feeding-minute{width:2.6rem;text-align:center;text-align-last:center}.time-picker .time-sep{font-weight:600;color:var(--text-soft);font-size:1rem}
 .vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-wrap #feeding-volume:disabled{background:#e8e8e8;color:#999;cursor:not-allowed;border-color:#ddd}.vol-wrap #feeding-volume:disabled::placeholder{color:#aaa}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
-.feed-mode-group{display:flex;align-items:stretch;gap:.22rem;flex-shrink:0}.feed-mode-btn{flex-shrink:0;box-sizing:border-box;min-width:2.65rem;width:2.65rem;height:2.32rem;padding:0 .15rem;border:1px solid var(--border);border-radius:6px;background:var(--card);cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit;position:relative}.feed-mode-btn .feed-mode-icons{display:inline-flex;align-items:flex-end;justify-content:center;gap:1px;line-height:1}.feed-mode-btn #feed-mode-icon{font-size:.92rem;line-height:1}.feed-mode-btn .feed-mode-chevron{font-size:.38rem;line-height:1;color:#888;padding-bottom:2px;font-weight:700}.feed-mode-btn.feed-active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 1px 4px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35)}.feed-mode-btn.feed-inactive{opacity:.42;background:var(--bg)}.nap-mode-btn{flex-shrink:0;box-sizing:border-box;min-width:2.65rem;width:2.65rem;height:2.32rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.92rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.nap-mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 1px 4px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35);transform:translateY(-1px)}.nap-mode-btn.nap-inactive{opacity:.42}
-.poop-toggle{flex-shrink:0;box-sizing:border-box;min-width:2.55rem;width:2.55rem;height:2.32rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.88rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
-.feed-picker-box{padding:1rem 1.1rem!important;max-width:300px}.feed-picker-title{font-size:.95rem;margin:0 0 .35rem;text-align:center}.feed-picker-hint{font-size:.72rem;color:var(--text-soft);margin:0 0 .75rem;text-align:center;line-height:1.4}.feed-picker-row{display:flex;gap:.5rem;margin-bottom:.75rem}.feed-picker-opt{flex:1;padding:.65rem .4rem;font-size:.85rem;font-family:inherit;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;line-height:1.3}.feed-picker-opt:active{transform:scale(.98)}.feed-picker-close{width:100%;padding:.55rem;font-size:.85rem;font-family:inherit;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer}
+.feed-mode-group{display:flex;align-items:stretch;gap:0;flex-shrink:0;border:1px solid var(--border);border-radius:6px;overflow:visible;background:var(--card);box-sizing:border-box}.feed-mode-cell-feed{position:relative;flex:0 0 auto;border-right:1px solid var(--border)}.feed-mode-btn{box-sizing:border-box;width:2.28rem;min-width:2.28rem;height:2.12rem;padding:0 .08rem;border:none;border-radius:5px 0 0 5px;background:transparent;cursor:pointer;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.feed-mode-btn .feed-mode-icons{display:inline-flex;align-items:flex-end;justify-content:center;gap:0;line-height:1}.feed-mode-btn #feed-mode-icon{font-size:.88rem;line-height:1}.feed-mode-btn .feed-mode-chevron{font-size:.34rem;line-height:1;color:#666;padding-bottom:1px;font-weight:700;transition:transform .15s ease}.feed-mode-btn.dropdown-open .feed-mode-chevron{transform:rotate(180deg);color:#444}.feed-mode-btn.feed-active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}.feed-mode-btn.feed-inactive{opacity:.45}.feed-mode-btn.feed-neutral{opacity:.48}.nap-mode-btn{box-sizing:border-box;width:2.28rem;min-width:2.28rem;height:2.12rem;padding:0;border:none;border-radius:0 5px 5px 0;background:transparent;cursor:pointer;font-size:.88rem;line-height:1;transition:background .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.nap-mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}.nap-mode-btn.nap-inactive{opacity:.45}.nap-mode-btn.nap-neutral{opacity:.48}
+.feed-inline-dropdown{display:none;position:absolute;top:calc(100% + 3px);left:0;z-index:40;min-width:6.8rem;background:var(--card);border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,.12);overflow:hidden}.feed-inline-dropdown.open{display:block}.feed-dd-item{display:block;width:100%;padding:.42rem .55rem;border:none;border-bottom:1px solid var(--border);background:var(--card);font-size:.78rem;font-family:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}.feed-dd-item:last-child{border-bottom:none}.feed-dd-item:active{background:var(--bg)}
+.poop-toggle{flex-shrink:0;box-sizing:border-box;min-width:2.4rem;width:2.4rem;height:2.12rem;padding:0;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.82rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;touch-action:manipulation;display:flex;align-items:center;justify-content:center;font-family:inherit}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .baby-tabs-wrap{margin-bottom:1.2rem}.baby-tabs{display:flex;gap:.5rem}.baby-btn{flex:1;padding:.6rem;font-size:.9rem;font-family:inherit;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer;transition:all .2s}.baby-btn:hover{opacity:.85}
 .baby-btn[data-baby="1"]{border-color:#a8c5d4;color:#5a8aa3}.baby-btn[data-baby="1"].active{background:linear-gradient(145deg,#9fc4d6,#7fadbf);color:#fff;box-shadow:0 4px 12px rgba(90,138,163,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#6a9ab5;transform:translateY(-1px)}
 .baby-btn[data-baby="2"]{border-color:#e8b4bc;color:#c4707e}.baby-btn[data-baby="2"].active{background:linear-gradient(145deg,#e5a5af,#cc8591);color:#fff;box-shadow:0 4px 12px rgba(196,112,126,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#b86578;transform:translateY(-1px)}
@@ -111,18 +111,6 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <button type="button" class="btn-yes" id="disconnect-yes">예</button>
         <button type="button" class="btn-no" id="disconnect-no">아니오</button>
       </div>
-    </div>
-  </div>
-  <!-- 분유/모유 선택 (수유 버튼 길게 누름) -->
-  <div class="name-modal-overlay" id="feed-picker-overlay">
-    <div class="name-modal feed-picker-box">
-      <h3 class="feed-picker-title">분유 / 모유</h3>
-      <p class="feed-picker-hint">▼ 표시 = 더 보기. 길게 눌러 여기서 고르세요.</p>
-      <div class="feed-picker-row">
-        <button type="button" class="feed-picker-opt" id="pick-feed-ml">🍼 분유 (ml)</button>
-        <button type="button" class="feed-picker-opt" id="pick-feed-min">🤱 모유 (분)</button>
-      </div>
-      <button type="button" class="feed-picker-close" id="feed-picker-close">닫기</button>
     </div>
   </div>
   <!-- AI 음성 인식 모달 -->
@@ -210,11 +198,17 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <input type="number" id="feeding-volume" min="0" max="999" step="10" inputmode="numeric" placeholder="용량">
         <span class="vol-unit" id="vol-unit">ml</span>
       </div>
-      <div class="feed-mode-group">
-        <button type="button" class="feed-mode-btn feed-active" id="btn-feed-mode" aria-label="수유 선택. 길게 눌러 분유 또는 모유 고르기" title="한 번: 수유 · 길게: 분유/모유">
-          <span class="feed-mode-icons"><span id="feed-mode-icon">🍼</span><span class="feed-mode-chevron" aria-hidden="true">▼</span></span>
-        </button>
-        <button type="button" class="nap-mode-btn nap-inactive" id="btn-nap-mode" aria-label="낮잠" title="낮잠 (다시 누르면 수유로)">😴</button>
+      <div class="feed-mode-group" id="feed-mode-group">
+        <div class="feed-mode-cell-feed">
+          <button type="button" class="feed-mode-btn feed-neutral" id="btn-feed-mode" aria-haspopup="listbox" aria-expanded="false" aria-label="수유. 한 번: 선택/해제. 길게: 분유·모유" title="탭: 수유 on/off · 길게: ▼ 메뉴">
+            <span class="feed-mode-icons"><span id="feed-mode-icon">🍼</span><span class="feed-mode-chevron" aria-hidden="true">▼</span></span>
+          </button>
+          <div class="feed-inline-dropdown" id="feed-inline-dropdown" role="listbox" aria-label="분유 또는 모유">
+            <button type="button" class="feed-dd-item" data-pick="ml" role="option">🍼 분유 (ml)</button>
+            <button type="button" class="feed-dd-item" data-pick="min" role="option">🤱 모유 (분)</button>
+          </div>
+        </div>
+        <button type="button" class="nap-mode-btn nap-neutral" id="btn-nap-mode" aria-label="낮잠" title="탭: 낮잠 on/off">😴</button>
       </div>
       <button type="button" class="poop-toggle" id="btn-poop">💩</button>
     </div>
@@ -408,7 +402,7 @@ var mediaRecorder = null;
 var audioChunks = [];
 var isRecording = false;
 
-/* 🍼🤱 수유 버튼(탭=수유 / 길게=선택) + 😴 낮잠 택1 + 똥 */
+/* 🍼🤱 수유(탭 토글 / 길게 인라인▼) + 😴 낮잠 택1 + 전부 해제 가능 + 똥 */
 var selectedFeedType = 'ml';
 var feedMlMin = 'ml';
 var poopActive = false;
@@ -417,16 +411,15 @@ var feedModeIcon = document.getElementById('feed-mode-icon');
 var btnNapMode = document.getElementById('btn-nap-mode');
 var btnPoop = document.getElementById('btn-poop');
 var volUnitEl = document.getElementById('vol-unit');
-var feedPickerOverlay = document.getElementById('feed-picker-overlay');
-var pickFeedMl = document.getElementById('pick-feed-ml');
-var pickFeedMin = document.getElementById('pick-feed-min');
-var feedPickerClose = document.getElementById('feed-picker-close');
-var FEED_LONG_PRESS_MS = 480;
+var feedInlineDropdown = document.getElementById('feed-inline-dropdown');
+var feedModeGroup = document.getElementById('feed-mode-group');
+var FEED_LONG_PRESS_MS = 450;
 var feedLongPressTimer = null;
 var feedLongPressFired = false;
 var feedTouchStartY = 0;
 var feedTouchMoved = false;
 var feedLastTouchEnd = 0;
+var feedIgnoreNextDocClick = false;
 
 var selectedBaby = '1';
 var allLogs = {};
@@ -449,8 +442,16 @@ function initNamesUI(){updateBabyButtonLabels();}
 
 function unitLabel(u){if(u==='min'||u==='nap')return'분';return'ml';}
 
-/* ── 분유/모유/낮잠 모드에 맞춰 같은 칸의 단위·스텝 ── */
+/* ── 분유/모유/낮잠/미선택 에 맞춰 같은 칸의 단위·스텝 ── */
 function syncFeedVolumeUI(){
+  if(selectedFeedType===''||selectedFeedType==null){
+    volumeInput.disabled=true;
+    volumeInput.value='';
+    volumeInput.placeholder='';
+    volumeInput.step='10';
+    if(volUnitEl)volUnitEl.textContent='—';
+    return;
+  }
   volumeInput.disabled=false;
   if(selectedFeedType==='min'){
     volumeInput.placeholder='시간';
@@ -474,42 +475,60 @@ function persistFeedUiState(){
   }catch(e){}
 }
 
+function closeFeedInlineDropdown(){
+  if(feedInlineDropdown)feedInlineDropdown.classList.remove('open');
+  if(btnFeedMode){
+    btnFeedMode.classList.remove('dropdown-open');
+    btnFeedMode.setAttribute('aria-expanded','false');
+  }
+}
+
+function openFeedInlineDropdown(){
+  if(!feedInlineDropdown)return;
+  feedInlineDropdown.classList.add('open');
+  if(btnFeedMode){
+    btnFeedMode.classList.add('dropdown-open');
+    btnFeedMode.setAttribute('aria-expanded','true');
+  }
+  feedIgnoreNextDocClick=true;
+  setTimeout(function(){feedIgnoreNextDocClick=false;},300);
+}
+
 function updateFeedModeVisuals(){
   if(feedModeIcon)feedModeIcon.textContent=feedMlMin==='ml'?'🍼':'🤱';
   if(btnFeedMode){
-    btnFeedMode.classList.remove('feed-active','feed-inactive');
-    if(selectedFeedType==='nap')btnFeedMode.classList.add('feed-inactive');
-    else btnFeedMode.classList.add('feed-active');
+    btnFeedMode.classList.remove('feed-active','feed-inactive','feed-neutral');
+    if(selectedFeedType==='ml'||selectedFeedType==='min')btnFeedMode.classList.add('feed-active');
+    else if(selectedFeedType==='nap')btnFeedMode.classList.add('feed-inactive');
+    else btnFeedMode.classList.add('feed-neutral');
   }
   if(btnNapMode){
-    btnNapMode.classList.remove('active','nap-inactive');
+    btnNapMode.classList.remove('active','nap-inactive','nap-neutral');
     if(selectedFeedType==='nap')btnNapMode.classList.add('active');
-    else btnNapMode.classList.add('nap-inactive');
+    else if(selectedFeedType==='ml'||selectedFeedType==='min')btnNapMode.classList.add('nap-inactive');
+    else btnNapMode.classList.add('nap-neutral');
   }
   syncFeedVolumeUI();
 }
 
-function closeFeedPicker(){
-  if(feedPickerOverlay)feedPickerOverlay.className='name-modal-overlay';
-}
-
-function openFeedPicker(){
-  if(feedPickerOverlay)feedPickerOverlay.className='name-modal-overlay open';
-}
-
-function applyFeedMlMin(val){
+function applyFeedMlMinFromDropdown(val){
   if(val!=='ml'&&val!=='min')return;
   feedMlMin=val;
   selectedFeedType=val;
-  if(btnNapMode)btnNapMode.classList.remove('active');
+  closeFeedInlineDropdown();
   updateFeedModeVisuals();
   persistFeedUiState();
-  closeFeedPicker();
 }
 
 function feedModeShortTap(){
-  selectedFeedType=feedMlMin;
-  if(btnNapMode)btnNapMode.classList.remove('active');
+  closeFeedInlineDropdown();
+  if(selectedFeedType==='ml'||selectedFeedType==='min'){
+    selectedFeedType='';
+  }else if(selectedFeedType==='nap'){
+    selectedFeedType=feedMlMin;
+  }else{
+    selectedFeedType=feedMlMin;
+  }
   updateFeedModeVisuals();
   persistFeedUiState();
 }
@@ -534,7 +553,7 @@ function bindFeedModeButton(){
     feedLongPressTimer=setTimeout(function(){
       feedLongPressTimer=null;
       feedLongPressFired=true;
-      openFeedPicker();
+      openFeedInlineDropdown();
     },FEED_LONG_PRESS_MS);
   },{passive:true});
 
@@ -566,7 +585,7 @@ function bindFeedModeButton(){
     feedLongPressTimer=setTimeout(function(){
       feedLongPressTimer=null;
       feedLongPressFired=true;
-      openFeedPicker();
+      openFeedInlineDropdown();
     },FEED_LONG_PRESS_MS);
   });
 
@@ -594,23 +613,42 @@ function bindFeedModeButton(){
 
 bindFeedModeButton();
 
-if(pickFeedMl)pickFeedMl.addEventListener('click',function(){applyFeedMlMin('ml');});
-if(pickFeedMin)pickFeedMin.addEventListener('click',function(){applyFeedMlMin('min');});
-if(feedPickerClose)feedPickerClose.addEventListener('click',function(){closeFeedPicker();});
-if(feedPickerOverlay){
-  feedPickerOverlay.addEventListener('click',function(e){
-    if(e.target===feedPickerOverlay)closeFeedPicker();
+if(feedInlineDropdown){
+  feedInlineDropdown.addEventListener('click',function(e){
+    var t=e.target;
+    while(t&&t!==feedInlineDropdown){
+      if(t.nodeType===1&&t.getAttribute){
+        var p=t.getAttribute('data-pick');
+        if(p==='ml'||p==='min'){
+          e.stopPropagation();
+          applyFeedMlMinFromDropdown(p);
+          return;
+        }
+      }
+      t=t.parentElement;
+    }
   });
 }
 
+document.addEventListener('click',function(e){
+  if(feedIgnoreNextDocClick)return;
+  if(!feedInlineDropdown||!feedInlineDropdown.classList.contains('open'))return;
+  var n=e.target;
+  while(n){
+    if(n===feedInlineDropdown||n===btnFeedMode)return;
+    n=n.parentElement;
+  }
+  closeFeedInlineDropdown();
+});
+
 if(btnNapMode){
-  btnNapMode.addEventListener('click',function(){
+  btnNapMode.addEventListener('click',function(e){
+    e.stopPropagation();
+    closeFeedInlineDropdown();
     if(selectedFeedType==='nap'){
-      selectedFeedType=feedMlMin;
-      btnNapMode.classList.remove('active');
+      selectedFeedType='';
     }else{
       selectedFeedType='nap';
-      btnNapMode.classList.add('active');
     }
     updateFeedModeVisuals();
     persistFeedUiState();
@@ -1110,10 +1148,9 @@ volumeInput.addEventListener('input',function(){
   if(v>=1000)this.value='999';
   if(v<0)this.value='0';
 });
-/* ── 이전 수유량 기억 ── */
+/* ── 이전 수유량 기억 (모드 선택 후 아래에서 복원) ── */
 var lastVol='';
 try{lastVol=localStorage.getItem('lastVolume')||'';}catch(e){}
-if(lastVol)volumeInput.value=lastVol;
 
 /* ── Add Log ── */
 btnAdd.addEventListener('click',function(){
@@ -1126,7 +1163,11 @@ btnAdd.addEventListener('click',function(){
   _log('I: vol='+vol+' poop='+poop+' baby='+selectedBaby+' feed='+selectedFeedType);
   if(!vol&&!poop){_log('I: empty');return;}
   if(vol){
-    addLog(ds,time,selectedBaby,vol,false,selectedFeedType||'ml');
+    if(!selectedFeedType||selectedFeedType===''){
+      codeStatusEl.textContent='수유 또는 낮잠을 선택하세요';
+      return;
+    }
+    addLog(ds,time,selectedBaby,vol,false,selectedFeedType);
     try{localStorage.setItem('lastVolume',vol);}catch(e){}
   }
   if(poop)addLog(ds,time,selectedBaby,'',true,'ml');
@@ -1141,12 +1182,19 @@ initTimePicker();
 var savedFeed='';
 var savedPoop='';
 try{
-  savedFeed=localStorage.getItem('selectedFeedType')||localStorage.getItem('selectedUnit')||'';
+  var sft=localStorage.getItem('selectedFeedType');
+  if(sft===null){
+    var ou=localStorage.getItem('selectedUnit');
+    savedFeed=(ou!==null&&ou!==undefined&&ou!=='')?ou:'ml';
+  }else{
+    savedFeed=sft;
+  }
+  if(savedFeed!==''&&savedFeed!=='ml'&&savedFeed!=='min'&&savedFeed!=='nap')savedFeed='ml';
   savedPoop=localStorage.getItem('poopActive')||'';
-}catch(e){}
-
-if(!savedFeed||savedFeed==='')savedFeed='ml';
-if(savedFeed!=='ml'&&savedFeed!=='min'&&savedFeed!=='nap')savedFeed='ml';
+}catch(e){
+  savedFeed='ml';
+  savedPoop='';
+}
 
 var mlMinChoice='ml';
 try{mlMinChoice=localStorage.getItem('feedMlMinChoice')||'ml';}catch(e){}
@@ -1154,12 +1202,14 @@ if(mlMinChoice!=='ml'&&mlMinChoice!=='min')mlMinChoice='ml';
 feedMlMin=mlMinChoice;
 
 selectedFeedType=savedFeed;
-if(selectedFeedType!=='nap'){
+if(selectedFeedType==='ml'||selectedFeedType==='min'){
   feedMlMin=selectedFeedType;
   try{localStorage.setItem('feedMlMinChoice',feedMlMin);}catch(e){}
 }
 
 updateFeedModeVisuals();
+
+if(lastVol&&selectedFeedType&&selectedFeedType!=='')volumeInput.value=lastVol;
 
 if(savedPoop==='1'){
   poopActive=true;
@@ -1704,7 +1754,9 @@ function displayAIResult(parsed){
     aiUnitSelect.value = 'none';
     aiVolumeField.style.display = 'none';
   } else {
-    aiUnitSelect.value = selectedFeedType==='nap' ? feedMlMin : (selectedFeedType || 'ml');
+    if(selectedFeedType==='nap')aiUnitSelect.value=feedMlMin;
+    else if(selectedFeedType==='ml'||selectedFeedType==='min')aiUnitSelect.value=selectedFeedType;
+    else aiUnitSelect.value=feedMlMin;
     aiVolumeField.style.display = 'flex';
   }
   
