@@ -200,7 +200,7 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
       </div>
       <div class="feed-mode-group" id="feed-mode-group">
         <div class="feed-mode-cell-feed">
-          <button type="button" class="feed-mode-btn feed-neutral" id="btn-feed-mode" aria-haspopup="listbox" aria-expanded="false" aria-label="수유. 한 번: 선택/해제. 길게: 분유·모유" title="탭: 수유 on/off · 길게: ▼ 메뉴">
+          <button type="button" class="feed-mode-btn feed-neutral" id="btn-feed-mode" aria-haspopup="listbox" aria-expanded="false" aria-label="수유. 탭: 선택·해제. 연속 두 번 탭 또는 길게: 분유·모유 메뉴" title="탭: 수유 on/off · 두 번 탭 또는 길게: ▼ 메뉴">
             <span class="feed-mode-icons"><span id="feed-mode-icon">🍼</span><span class="feed-mode-chevron" aria-hidden="true">▼</span></span>
           </button>
           <div class="feed-inline-dropdown" id="feed-inline-dropdown" role="listbox" aria-label="분유 또는 모유">
@@ -414,12 +414,15 @@ var volUnitEl = document.getElementById('vol-unit');
 var feedInlineDropdown = document.getElementById('feed-inline-dropdown');
 var feedModeGroup = document.getElementById('feed-mode-group');
 var FEED_LONG_PRESS_MS = 450;
+var FEED_DOUBLE_TAP_MS = 380;
 var feedLongPressTimer = null;
 var feedLongPressFired = false;
 var feedTouchStartY = 0;
 var feedTouchMoved = false;
 var feedLastTouchEnd = 0;
 var feedIgnoreNextDocClick = false;
+var feedLastTouchHandledAt = 0;
+var feedModePrevTapAt = 0;
 
 var selectedBaby = '1';
 var allLogs = {};
@@ -524,13 +527,23 @@ function feedModeShortTap(){
   closeFeedInlineDropdown();
   if(selectedFeedType==='ml'||selectedFeedType==='min'){
     selectedFeedType='';
-  }else if(selectedFeedType==='nap'){
-    selectedFeedType=feedMlMin;
   }else{
+    /* 낮잠·미선택: 탭 한 번이면 마지막 분유/모유(feedMlMin)로 수유 선택 */
     selectedFeedType=feedMlMin;
   }
   updateFeedModeVisuals();
   persistFeedUiState();
+}
+
+function handleFeedModeShortActivate(){
+  var now=Date.now();
+  if(now-feedModePrevTapAt<FEED_DOUBLE_TAP_MS){
+    feedModePrevTapAt=0;
+    openFeedInlineDropdown();
+    return;
+  }
+  feedModePrevTapAt=now;
+  feedModeShortTap();
 }
 
 function clearFeedLongPressTimer(){
@@ -565,6 +578,7 @@ function bindFeedModeButton(){
 
   btnFeedMode.addEventListener('touchend',function(){
     clearFeedLongPressTimer();
+    feedLastTouchHandledAt=Date.now();
     if(feedLongPressFired){
       feedLastTouchEnd=Date.now();
       setTimeout(function(){feedLongPressFired=false;},300);
@@ -572,7 +586,7 @@ function bindFeedModeButton(){
     }
     if(feedTouchMoved)return;
     feedLastTouchEnd=Date.now();
-    feedModeShortTap();
+    handleFeedModeShortActivate();
   });
 
   btnFeedMode.addEventListener('touchcancel',function(){
@@ -580,6 +594,7 @@ function bindFeedModeButton(){
   });
 
   btnFeedMode.addEventListener('mousedown',function(){
+    if(Date.now()-feedLastTouchHandledAt<500)return;
     feedLongPressFired=false;
     clearFeedLongPressTimer();
     feedLongPressTimer=setTimeout(function(){
@@ -591,12 +606,13 @@ function bindFeedModeButton(){
 
   btnFeedMode.addEventListener('mouseup',function(){
     clearFeedLongPressTimer();
+    if(Date.now()-feedLastTouchHandledAt<500)return;
     if(feedLongPressFired){
       setTimeout(function(){feedLongPressFired=false;},100);
       return;
     }
     feedLastTouchEnd=Date.now();
-    feedModeShortTap();
+    handleFeedModeShortActivate();
   });
 
   btnFeedMode.addEventListener('mouseleave',function(){
