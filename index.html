@@ -32,7 +32,7 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
 .add-row{display:flex;gap:.3rem;margin-bottom:1.1rem;margin-top:.2rem;align-items:center}
 .time-picker{display:flex;align-items:center;gap:.15rem;flex:0 0 auto}.time-picker select{padding:.6rem .25rem;font-size:.88rem;border:1px solid var(--border);border-radius:6px;font-family:inherit;background:var(--card);color:var(--text)}.time-picker #feeding-hour,.time-picker #feeding-minute{width:2.6rem;text-align:center;text-align-last:center}.time-picker .time-sep{font-weight:600;color:var(--text-soft);font-size:1rem}
 .vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-wrap #feeding-volume:disabled{background:#e8e8e8;color:#999;cursor:not-allowed;border-color:#ddd}.vol-wrap #feeding-volume:disabled::placeholder{color:#aaa}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
-.mode-toggle{display:flex;flex-shrink:0}.mode-btn{padding:.55rem .5rem;border:1px solid var(--border);background:var(--bg);cursor:pointer;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;font-size:.95rem}.mode-btn:first-child{border-radius:6px 0 0 6px}.mode-btn:last-child{border-radius:0 6px 6px 0}.mode-btn.active{background:linear-gradient(145deg,#d4d4d4,#b8b8b8);border-color:#777;box-shadow:0 2px 6px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
+.feed-type-select{flex-shrink:0;min-width:4.2rem;max-width:5.2rem;padding:.5rem .25rem;font-size:.78rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none;text-align:center;text-align-last:center}.nap-wrap{display:flex;align-items:stretch;flex:0 0 auto;gap:.2rem}.nap-wrap #nap-minutes{width:2.9rem;min-width:2.5rem;padding:.55rem .15rem;font-size:.85rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.nap-wrap #nap-minutes::-webkit-inner-spin-button,.nap-wrap #nap-minutes::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.nap-wrap .nap-unit{display:flex;align-items:center;justify-content:center;min-width:1.5rem;padding:0 .2rem;font-size:.72rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px}
 .poop-toggle{flex-shrink:0;padding:.55rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.95rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;margin-left:.15rem}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .baby-tabs-wrap{margin-bottom:1.2rem}.baby-tabs{display:flex;gap:.5rem}.baby-btn{flex:1;padding:.6rem;font-size:.9rem;font-family:inherit;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer;transition:all .2s}.baby-btn:hover{opacity:.85}
 .baby-btn[data-baby="1"]{border-color:#a8c5d4;color:#5a8aa3}.baby-btn[data-baby="1"].active{background:linear-gradient(145deg,#9fc4d6,#7fadbf);color:#fff;box-shadow:0 4px 12px rgba(90,138,163,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#6a9ab5;transform:translateY(-1px)}
@@ -130,7 +130,8 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
           <p>"<span class="ex-baby-first">첫째</span> 오후 3시 30분에 분유 150 기록해줘"</p>
           <p>"<span class="ex-baby-second">둘째</span> 10분 전에 모유 20분 먹었어"</p>
           <p>"둘 다 5분 전에 똥"</p>
-          <p class="ex-note">* 시간: 오전/오후, 24시간, "5분 전", "30분 전", "1시간 전" 등</p>
+          <p>"<span class="ex-baby-first">첫째</span> 낮잠 40분"</p>
+          <p class="ex-note">* 시간: 오전/오후, 24시간, "N분 전", "N시간 전" 등 · 낮잠은 분 단위</p>
         </div>
       </div>
       <div class="ai-result-section" id="ai-result-section">
@@ -160,6 +161,7 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
             <select id="ai-unit">
               <option value="ml">분유 (ml)</option>
               <option value="min">모유 (분)</option>
+              <option value="nap">낮잠 (분)</option>
               <option value="none">없음</option>
             </select>
           </div>
@@ -195,9 +197,14 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <input type="number" id="feeding-volume" min="0" max="999" step="10" inputmode="numeric" placeholder="용량">
         <span class="vol-unit" id="vol-unit">ml</span>
       </div>
-      <div class="mode-toggle">
-        <button type="button" class="mode-btn" data-unit="ml">🍼</button>
-        <button type="button" class="mode-btn" data-unit="min">🤱</button>
+      <select id="feed-type" class="feed-type-select" aria-label="수유 방식">
+        <option value="">—</option>
+        <option value="ml">🍼 분유</option>
+        <option value="min">🤱 모유</option>
+      </select>
+      <div class="nap-wrap">
+        <input type="number" id="nap-minutes" min="0" max="999" step="5" inputmode="numeric" placeholder="낮잠" aria-label="낮잠 분">
+        <span class="nap-unit">분</span>
       </div>
       <button type="button" class="poop-toggle" id="btn-poop">💩</button>
     </div>
@@ -242,6 +249,11 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
             <td class="stat-value-right" id="stat-second-ml">0ml (0회)</td>
           </tr>
           <tr>
+            <td class="stat-value-left" id="stat-first-nap">0분 (0회)</td>
+            <td class="stat-label">일평균 낮잠</td>
+            <td class="stat-value-right" id="stat-second-nap">0분 (0회)</td>
+          </tr>
+          <tr>
             <td class="stat-value-left" id="stat-first-poop">0회</td>
             <td class="stat-label">일평균 똥 횟수</td>
             <td class="stat-value-right" id="stat-second-poop">0회</td>
@@ -258,6 +270,16 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
           <span class="legend-item"><span class="legend-color baby2"></span><span id="legend-second">둘째</span></span>
         </div>
         <div class="chart-bars" id="chart-volume"></div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">일별 낮잠 시간 (분)</div>
+      <div class="chart-wrapper">
+        <div class="chart-legend-inner">
+          <span class="legend-item"><span class="legend-color baby1"></span><span id="legend-first-nap">첫째</span></span>
+          <span class="legend-item"><span class="legend-color baby2"></span><span id="legend-second-nap">둘째</span></span>
+        </div>
+        <div class="chart-bars" id="chart-nap"></div>
       </div>
     </div>
     <div class="chart-container">
@@ -376,10 +398,11 @@ var mediaRecorder = null;
 var audioChunks = [];
 var isRecording = false;
 
-/* Mode toggle (unit + poop) */
-var selectedUnit = '';
+/* 수유 방식 드롭다운 + 낮잠 + 똥 */
+var selectedFeedType = '';
 var poopActive = false;
-var unitBtns = document.querySelectorAll('.mode-btn[data-unit]');
+var feedTypeSelect = document.getElementById('feed-type');
+var napInput = document.getElementById('nap-minutes');
 var btnPoop = document.getElementById('btn-poop');
 var volUnitEl = document.getElementById('vol-unit');
 
@@ -402,54 +425,34 @@ function babyLabel(b){var n=getDisplayNames();if(b==='1')return n.first;if(b==='
 function updateBabyButtonLabels(){var n=getDisplayNames();var l=document.querySelectorAll('.baby-btn-label');if(l.length>0)l[0].textContent=n.first;if(l.length>1)l[1].textContent=n.second;}
 function initNamesUI(){updateBabyButtonLabels();}
 
-function unitLabel(u){return u==='min'?'분':'ml';}
+function unitLabel(u){if(u==='min'||u==='nap')return'분';return'ml';}
 
-/* ── 수유량 입력 칸 활성화/비활성화 ── */
-function updateVolumeInputState(){
-  if(!selectedUnit){
+/* ── 분유/모유 미선택 시 수유량 비활성화 ── */
+function syncFeedVolumeUI(){
+  if(!selectedFeedType){
     volumeInput.disabled=true;
-    volumeInput.placeholder='수유방식 선택';
+    volumeInput.placeholder='용량';
     volumeInput.value='';
+    if(volUnitEl)volUnitEl.textContent='ml';
   }else{
     volumeInput.disabled=false;
-    if(selectedUnit==='min'){
+    if(selectedFeedType==='min'){
       volumeInput.placeholder='시간';
+      volumeInput.step='5';
+      if(volUnitEl)volUnitEl.textContent='분';
     }else{
       volumeInput.placeholder='용량';
+      volumeInput.step='10';
+      if(volUnitEl)volUnitEl.textContent='ml';
     }
   }
 }
 
-/* ── Unit Toggle (토글 방식: 선택/해제 가능) ── */
-for(var ui=0;ui<unitBtns.length;ui++){(function(btn){
-  btn.addEventListener('click',function(){
-    var clickedUnit=btn.getAttribute('data-unit');
-    if(selectedUnit===clickedUnit){
-      /* 이미 선택된 버튼 클릭 시 선택 해제 */
-      btn.className='mode-btn';
-      selectedUnit='';
-      volumeInput.step='10';
-      if(volUnitEl)volUnitEl.textContent='ml';
-      try{localStorage.setItem('selectedUnit','');}catch(e){}
-    }else{
-      /* 다른 버튼 클릭 시 선택 */
-      for(var j=0;j<unitBtns.length;j++){
-        unitBtns[j].className='mode-btn';
-      }
-      btn.className='mode-btn active';
-      selectedUnit=clickedUnit;
-      if(selectedUnit==='min'){
-        volumeInput.step='5';
-        if(volUnitEl)volUnitEl.textContent='min';
-      }else{
-        volumeInput.step='10';
-        if(volUnitEl)volUnitEl.textContent='ml';
-      }
-      try{localStorage.setItem('selectedUnit',selectedUnit);}catch(e){}
-    }
-    updateVolumeInputState();
-  });
-})(unitBtns[ui]);}
+feedTypeSelect.addEventListener('change',function(){
+  selectedFeedType=feedTypeSelect.value||'';
+  try{localStorage.setItem('selectedFeedType',selectedFeedType);}catch(e){}
+  syncFeedVolumeUI();
+});
 
 /* ── Poop Toggle ── */
 btnPoop.addEventListener('click',function(){
@@ -538,10 +541,20 @@ timeEditModal.addEventListener('click',function(e){
 function openEditModal(date,key,baby,curVol,curUnit){
   editingLogKey=key; editingLogDate=date; editingLogBaby=baby;
   var u=curUnit||'ml';
-  editModalTitle.textContent=(u==='min'?'수유시간 수정':'수유량 수정');
+  if(u==='nap'){
+    editModalTitle.textContent='낮잠 시간 수정';
+    editModalInput.step='5';
+    editModalInput.placeholder='낮잠(분)';
+  }else if(u==='min'){
+    editModalTitle.textContent='수유시간 수정';
+    editModalInput.step='5';
+    editModalInput.placeholder='시간(분)';
+  }else{
+    editModalTitle.textContent='수유량 수정';
+    editModalInput.step='10';
+    editModalInput.placeholder='용량(ml)';
+  }
   editModalInput.value=(curVol!=null&&curVol!=='')?curVol:'';
-  editModalInput.step=u==='min'?'5':'10';
-  editModalInput.placeholder=u==='min'?'시간(분)':'용량(ml)';
   editModal.className='name-modal-overlay open';
   editModalInput.focus();
   setTimeout(function(){editModalInput.select();},50);
@@ -561,7 +574,9 @@ editModalSave.addEventListener('click',function(){
   }else{
     logsRef.child(editingLogDate).child(editingLogKey).update({volume:newVol});
   }
-  try{localStorage.setItem('lastVolume',''+newVol);}catch(e){}
+  var ou=origLog&&(origLog.unit||'ml');
+  if(ou==='nap'){try{localStorage.setItem('lastNap',''+newVol);}catch(e){}}
+  else{try{localStorage.setItem('lastVolume',''+newVol);}catch(e){}}
   editModal.className='name-modal-overlay'; editingLogKey=null;
 });
 editModalDelete.addEventListener('click',function(){
@@ -586,8 +601,9 @@ function getLogsForDate(ds){
   return r;
 }
 
-function findExistingKeys(ds,time,baby,isPoop){
+function findExistingKeys(ds,time,baby,isPoop,unitMatch){
   var o=allLogs[ds]||{};var keys=Object.keys(o);var found=[];
+  var uWant=unitMatch||'ml';
   for(var i=0;i<keys.length;i++){var k=keys[i];var lg=o[k];
     if(lg.time!==time) continue;
     var match=false;
@@ -596,7 +612,10 @@ function findExistingKeys(ds,time,baby,isPoop){
     else if(lg.baby==='both'&&(baby==='1'||baby==='2')) match=true;
     if(!match) continue;
     if(isPoop&&lg.poop) found.push(k);
-    if(!isPoop&&!lg.poop&&lg.volume!=null) found.push(k);
+    if(!isPoop&&!lg.poop&&lg.volume!=null){
+      var uLg=lg.unit||'ml';
+      if(uLg===uWant) found.push(k);
+    }
   }
   return found;
 }
@@ -621,7 +640,7 @@ function addLog(ds,time,baby,vol,poop,unit){
   var v=(vol!==''&&vol!==undefined&&vol!==null)?Number(vol):null;
   var isPoop=!!poop;
   var u=unit||'ml';
-  var existKeys=findExistingKeys(ds,time,baby,isPoop);
+  var existKeys=findExistingKeys(ds,time,baby,isPoop,isPoop?null:u);
   if(existKeys.length>0){
     var updates={time:time,baby:baby,poop:isPoop};
     if(!isPoop&&v!==null&&!isNaN(v)){updates.volume=v;updates.unit=u;}
@@ -646,30 +665,33 @@ function removeLog(ds,key,fromBaby){
 
 function getDailyTotals(ds){
   var logs=getLogsForDate(ds);
-  var fV=0,sV=0,fC=0,sC=0,fM=0,sM=0,fMC=0,sMC=0,fP=0,sP=0;
+  var fV=0,sV=0,fC=0,sC=0,fM=0,sM=0,fMC=0,sMC=0,fP=0,sP=0,fN=0,sN=0,fNC=0,sNC=0;
   for(var i=0;i<logs.length;i++){var lg=logs[i];
     var isFeed=lg.volume!=null&&!lg.poop;
     var isPoop=lg.poop;
     var v=lg.volume!=null?lg.volume:0;
     var isMin=lg.unit==='min';
+    var isNap=lg.unit==='nap';
     if(lg.baby==='1'||lg.baby==='both'){
-      if(isFeed){if(isMin){fM+=v;fMC++;}else{fV+=v;fC++;}}
+      if(isFeed){if(isNap){fN+=v;fNC++;}else if(isMin){fM+=v;fMC++;}else{fV+=v;fC++;}}
       if(isPoop)fP++;
     }
     if(lg.baby==='2'||lg.baby==='both'){
-      if(isFeed){if(isMin){sM+=v;sMC++;}else{sV+=v;sC++;}}
+      if(isFeed){if(isNap){sN+=v;sNC++;}else if(isMin){sM+=v;sMC++;}else{sV+=v;sC++;}}
       if(isPoop)sP++;
     }
   }
-  return{fVol:fV,sVol:sV,fCnt:fC,sCnt:sC,fMin:fM,sMin:sM,fMinCnt:fMC,sMinCnt:sMC,fPoop:fP,sPoop:sP};
+  return{fVol:fV,sVol:sV,fCnt:fC,sCnt:sC,fMin:fM,sMin:sM,fMinCnt:fMC,sMinCnt:sMC,fPoop:fP,sPoop:sP,fNap:fN,sNap:sN,fNapCnt:fNC,sNapCnt:sNC};
 }
 function updateDailyTotal(){
   var t=getDailyTotals(currentDate());
   var fH='🍼'+t.fVol+'ml·'+t.fCnt+'회';
   if(t.fMinCnt>0)fH+=' 🤱'+t.fMin+'분·'+t.fMinCnt+'회';
+  if(t.fNapCnt>0)fH+=' 😴'+t.fNap+'분·'+t.fNapCnt+'회';
   fH+='<br>💩'+t.fPoop+'회';
   var sH='🍼'+t.sVol+'ml·'+t.sCnt+'회';
   if(t.sMinCnt>0)sH+=' 🤱'+t.sMin+'분·'+t.sMinCnt+'회';
+  if(t.sNapCnt>0)sH+=' 😴'+t.sNap+'분·'+t.sNapCnt+'회';
   sH+='<br>💩'+t.sPoop+'회';
   if(totalFirstEl)totalFirstEl.innerHTML=fH;
   if(totalSecondEl)totalSecondEl.innerHTML=sH;
@@ -683,8 +705,19 @@ function renderList(){
 /* ── Split View ── */
 function fmtItem(lg){
   if(lg.poop)return '💩';
-  if(lg.volume!=null){var ic=lg.unit==='min'?'🤱':'🍼';return ic+lg.volume+unitLabel(lg.unit);}
+  if(lg.volume!=null){
+    if(lg.unit==='nap')return'😴'+lg.volume+'분';
+    var ic=lg.unit==='min'?'🤱':'🍼';
+    return ic+lg.volume+unitLabel(lg.unit);
+  }
   return '—';
+}
+
+function logTypeOrder(lg){
+  if(lg.poop)return 3;
+  if(lg.unit==='nap')return 2;
+  if(lg.unit==='min')return 1;
+  return 0;
 }
 
 function renderSplitView(){
@@ -696,7 +729,7 @@ function renderSplitView(){
   function cellHtml(time,bf){
     var items=[];
     for(var k=0;k<logs.length;k++){var l=logs[k];if(l.time===time&&(l.baby===bf||l.baby==='both'))items.push(l);}
-    items.sort(function(a,b){return (a.volume!=null?0:1)-(b.volume!=null?0:1);});
+    items.sort(function(a,b){return logTypeOrder(a)-logTypeOrder(b);});
     if(!items.length)return '—';
     var h='<div class="cell-flex">';
     for(var m=0;m<items.length;m++){var lg=items[m];
@@ -915,6 +948,13 @@ volumeInput.addEventListener('input',function(){
   if(v>=1000)this.value='999';
   if(v<0)this.value='0';
 });
+if(napInput){
+  napInput.addEventListener('input',function(){
+    var v=parseInt(this.value,10);
+    if(v>=1000)this.value='999';
+    if(v<0)this.value='0';
+  });
+}
 
 /* ── 이전 수유량 기억 ── */
 var lastVol='';
@@ -928,17 +968,22 @@ btnAdd.addEventListener('click',function(){
   var ds=currentDate();var time=getTimeFromInputs();
   if(!time){setTimeToNow();time=getTimeFromInputs();}
   if(!time){_log('I: no time');return;}
-  var vol=volumeInput.value;var poop=poopActive;
-  _log('I: vol='+vol+' poop='+poop+' baby='+selectedBaby+' unit='+selectedUnit);
-  /* 분유/모유 선택 안 했으면 수유량 무시 */
-  if(!selectedUnit)vol='';
-  if(!vol&&!poop){_log('I: empty');return;}
-  if(vol&&selectedUnit){
-    addLog(ds,time,selectedBaby,vol,false,selectedUnit);
+  var vol=volumeInput.value;var napStr=napInput?napInput.value:'';var poop=poopActive;
+  _log('I: vol='+vol+' nap='+napStr+' poop='+poop+' baby='+selectedBaby+' feed='+selectedFeedType);
+  if(!selectedFeedType)vol='';
+  var napVal=(napStr!==''&&napStr!=null)?parseInt(napStr,10):NaN;
+  if(isNaN(napVal)||napVal<0)napVal=0;
+  if(!vol&&!napVal&&!poop){_log('I: empty');return;}
+  if(vol&&selectedFeedType){
+    addLog(ds,time,selectedBaby,vol,false,selectedFeedType);
     try{localStorage.setItem('lastVolume',vol);}catch(e){}
   }
+  if(napVal>0){
+    addLog(ds,time,selectedBaby,String(napVal),false,'nap');
+    try{localStorage.setItem('lastNap',String(napVal));}catch(e){}
+  }
   if(poop)addLog(ds,time,selectedBaby,'',true,'ml');
-  /* 똥 토글 해제 */
+  if(napInput)napInput.value='';
   poopActive=false;
   btnPoop.className='poop-toggle';
   try{localStorage.setItem('poopActive','0');}catch(e){}
@@ -947,30 +992,24 @@ btnAdd.addEventListener('click',function(){
 initTimePicker();
 
 /* ── 이전 선택 상태 복원 ── */
-var savedUnit='';
+var savedFeed='';
 var savedPoop='';
 try{
-  savedUnit=localStorage.getItem('selectedUnit')||'';
+  savedFeed=localStorage.getItem('selectedFeedType')||localStorage.getItem('selectedUnit')||'';
   savedPoop=localStorage.getItem('poopActive')||'';
 }catch(e){}
 
-if(savedUnit){
-  selectedUnit=savedUnit;
-  for(var i=0;i<unitBtns.length;i++){
-    if(unitBtns[i].getAttribute('data-unit')===savedUnit){
-      unitBtns[i].className='mode-btn active';
-      if(savedUnit==='min'){
-        volumeInput.step='5';
-        if(volUnitEl)volUnitEl.textContent='min';
-      }else{
-        volumeInput.step='10';
-        if(volUnitEl)volUnitEl.textContent='ml';
-      }
-    }
-  }
+if(feedTypeSelect&&savedFeed){
+  selectedFeedType=savedFeed;
+  feedTypeSelect.value=savedFeed;
 }
 
-updateVolumeInputState();
+syncFeedVolumeUI();
+
+try{
+  var ln=localStorage.getItem('lastNap')||'';
+  if(ln&&napInput)napInput.value=ln;
+}catch(e){}
 
 if(savedPoop==='1'){
   poopActive=true;
@@ -1032,7 +1071,7 @@ function renderStats(){
   for(var i=0; i<weekDates.length; i++){
     var ds = weekDates[i];
     var dayLogs = allLogs[ds] || {};
-    var dayStats = {first:{ml:0,min:0,poop:0,mlCnt:0,minCnt:0}, second:{ml:0,min:0,poop:0,mlCnt:0,minCnt:0}};
+    var dayStats = {first:{ml:0,min:0,nap:0,poop:0,mlCnt:0,minCnt:0,napCnt:0}, second:{ml:0,min:0,nap:0,poop:0,mlCnt:0,minCnt:0,napCnt:0}};
     var logCount = 0;
     for(var k in dayLogs)logCount++;
     if(logCount>0)_log('DAY-DEBUG: '+ds+' has '+logCount+' logs');
@@ -1050,15 +1089,17 @@ function renderStats(){
           dayStats.second.poop++;
         }
       }
-      if(log.volume&&log.volume!==''){
+      if(log.volume!=null&&log.volume!==''&&!log.poop){
         var vol = parseInt(log.volume,10)||0;
         var unit = log.unit||'ml';
         if(baby==='1'||baby==='both'){
           if(unit==='ml'){dayStats.first.ml+=vol;dayStats.first.mlCnt++;}
+          else if(unit==='nap'){dayStats.first.nap+=vol;dayStats.first.napCnt++;}
           else{dayStats.first.min+=vol;dayStats.first.minCnt++;}
         }
         if(baby==='2'||baby==='both'){
           if(unit==='ml'){dayStats.second.ml+=vol;dayStats.second.mlCnt++;}
+          else if(unit==='nap'){dayStats.second.nap+=vol;dayStats.second.napCnt++;}
           else{dayStats.second.min+=vol;dayStats.second.minCnt++;}
         }
       }
@@ -1066,8 +1107,8 @@ function renderStats(){
     weekData[dayNames[i]] = dayStats;
   }
   
-  var totalFirst = {ml:0,min:0,poop:0,mlCnt:0,minCnt:0};
-  var totalSecond = {ml:0,min:0,poop:0,mlCnt:0,minCnt:0};
+  var totalFirst = {ml:0,min:0,nap:0,poop:0,mlCnt:0,minCnt:0,napCnt:0};
+  var totalSecond = {ml:0,min:0,nap:0,poop:0,mlCnt:0,minCnt:0,napCnt:0};
   var todayDate = todayStr();
   var daysToCount = 0;
   
@@ -1079,14 +1120,18 @@ function renderStats(){
       var ds = weekData[dn];
       totalFirst.ml += ds.first.ml;
       totalFirst.min += ds.first.min;
+      totalFirst.nap += ds.first.nap;
       totalFirst.poop += ds.first.poop;
       totalFirst.mlCnt += ds.first.mlCnt;
       totalFirst.minCnt += ds.first.minCnt;
+      totalFirst.napCnt += ds.first.napCnt;
       totalSecond.ml += ds.second.ml;
       totalSecond.min += ds.second.min;
+      totalSecond.nap += ds.second.nap;
       totalSecond.poop += ds.second.poop;
       totalSecond.mlCnt += ds.second.mlCnt;
       totalSecond.minCnt += ds.second.minCnt;
+      totalSecond.napCnt += ds.second.napCnt;
     }
   }
   
@@ -1098,6 +1143,10 @@ function renderStats(){
   var avgSecondCnt = Math.round((totalSecond.mlCnt + totalSecond.minCnt) / daysToCount * 10) / 10;
   var avgFirstPoop = Math.round(totalFirst.poop / daysToCount * 10) / 10;
   var avgSecondPoop = Math.round(totalSecond.poop / daysToCount * 10) / 10;
+  var avgFirstNap = Math.round(totalFirst.nap / daysToCount);
+  var avgSecondNap = Math.round(totalSecond.nap / daysToCount);
+  var avgFirstNapCnt = Math.round(totalFirst.napCnt / daysToCount * 10) / 10;
+  var avgSecondNapCnt = Math.round(totalSecond.napCnt / daysToCount * 10) / 10;
   
   _log('STATS: today='+todayDate+' days='+daysToCount+' 1st.poop='+totalFirst.poop+' 2nd.poop='+totalSecond.poop+' 1st.ml='+totalFirst.ml+' 2nd.ml='+totalSecond.ml);
   
@@ -1106,17 +1155,24 @@ function renderStats(){
   document.getElementById('stat-name-second').textContent = names.second;
   document.getElementById('stat-first-ml').textContent = avgFirstMl + 'ml (' + avgFirstCnt + '회)';
   document.getElementById('stat-second-ml').textContent = avgSecondMl + 'ml (' + avgSecondCnt + '회)';
+  document.getElementById('stat-first-nap').textContent = avgFirstNap + '분 (' + avgFirstNapCnt + '회)';
+  document.getElementById('stat-second-nap').textContent = avgSecondNap + '분 (' + avgSecondNapCnt + '회)';
   document.getElementById('stat-first-poop').textContent = avgFirstPoop + '회';
   document.getElementById('stat-second-poop').textContent = avgSecondPoop + '회';
   
   document.getElementById('legend-first').textContent = names.first;
   document.getElementById('legend-second').textContent = names.second;
+  var elN1=document.getElementById('legend-first-nap');
+  var elN2=document.getElementById('legend-second-nap');
+  if(elN1)elN1.textContent = names.first;
+  if(elN2)elN2.textContent = names.second;
   var el1=document.getElementById('legend-first-poop-2');
   var el2=document.getElementById('legend-second-poop-2');
   if(el1)el1.textContent = names.first;
   if(el2)el2.textContent = names.second;
   
   renderChart('chart-volume', weekData, 'ml');
+  renderChart('chart-nap', weekData, 'nap');
   renderChart('chart-poop', weekData, 'poop');
 }
 
@@ -1127,14 +1183,14 @@ function renderChart(containerId, weekData, type){
   
   var dayNames = ['sun','mon','tue','wed','thu','fri','sat'];
   var dayLabels = ['일','월','화','수','목','금','토'];
-  var maxVal = type==='poop' ? 7 : 1200;
+  var maxVal = type==='poop' ? 7 : (type==='nap' ? 300 : 1200);
   var weekDates = getWeekDates(currentWeekStart);
   
   for(var i=0; i<dayNames.length; i++){
     var dn = dayNames[i];
     var ds = weekData[dn];
-    var val1 = type==='poop' ? ds.first.poop : ds.first.ml;
-    var val2 = type==='poop' ? ds.second.poop : ds.second.ml;
+    var val1 = type==='poop' ? ds.first.poop : (type==='nap' ? ds.first.nap : ds.first.ml);
+    var val2 = type==='poop' ? ds.second.poop : (type==='nap' ? ds.second.nap : ds.second.ml);
     var height1 = Math.round((val1 / maxVal) * 100);
     var height2 = Math.round((val2 / maxVal) * 100);
     
@@ -1241,14 +1297,15 @@ function parseWithGPT(transcript, callback){
   prompt += '  "minute": 분 (0-59) 또는 null,\n';
   prompt += '  "relativeMinutes": "N분 전"의 N 숫자 또는 null,\n';
   prompt += '  "relativeHours": "N시간 전"의 N 숫자 또는 null,\n';
-  prompt += '  "unit": "ml" 또는 "min" 또는 null,\n';
+  prompt += '  "unit": "ml" 또는 "min" 또는 "nap" 또는 null,\n';
   prompt += '  "volume": 숫자 또는 null,\n';
   prompt += '  "poop": true 또는 false\n';
   prompt += '}\n\n';
   prompt += '규칙:\n';
   prompt += '- 아기 이름이 "'+names.first+'"이면 baby="1", "'+names.second+'"이면 baby="2"\n';
   prompt += '- "첫째"는 baby="1", "둘째"는 baby="2", "둘 다"/"모두"는 baby="both"\n';
-  prompt += '- 분유/ml이면 unit="ml", 모유/분이면 unit="min"\n';
+  prompt += '- 분유/ml이면 unit="ml", 모유/분(수유 시간)이면 unit="min"\n';
+  prompt += '- 낮잠/잠잤어/쿨쿨/낮잠 N분/잠 N분 등은 unit="nap", volume=낮잠 분 수\n';
   prompt += '- 똥/응가/대변이 언급되면 poop=true\n';
   prompt += '- 시간 처리:\n';
   prompt += '  * 절대 시간("3시 30분", "오후 2시") → hour와 minute에 직접 입력, relativeMinutes=null, relativeHours=null\n';
@@ -1358,7 +1415,7 @@ function startVoiceRecording(){
   _log('AI-START: requesting microphone...');
   isRecording = true;
   aiMicBtn.classList.add('recording');
-  aiHint.textContent = '듣는 중... (5초)';
+  aiHint.textContent = '녹음 중... (다시 탭하여 종료)';
   aiResultContent.classList.add('hidden');
   aiToggleBtn.querySelector('.toggle-icon').classList.remove('open');
   aiConfirmBtn.classList.add('hidden');
@@ -1497,8 +1554,19 @@ function displayAIResult(parsed){
     aiUnitSelect.value = 'none';
     aiVolumeField.style.display = 'none';
   } else {
-    aiUnitSelect.value = selectedUnit || 'ml';
+    aiUnitSelect.value = selectedFeedType || 'ml';
     aiVolumeField.style.display = 'flex';
+  }
+  
+  if(aiUnitSelect.value==='nap'){
+    aiVolumeInput.step='5';
+    aiVolumeInput.setAttribute('max','999');
+  }else if(aiUnitSelect.value==='min'){
+    aiVolumeInput.step='5';
+    aiVolumeInput.setAttribute('max','999');
+  }else{
+    aiVolumeInput.step='10';
+    aiVolumeInput.setAttribute('max','999');
   }
   
   if(parsed.volume){
@@ -1542,7 +1610,7 @@ btnAI.addEventListener('click', function(){
   
   aiModal.classList.add('open');
   aiMicBtn.classList.remove('recording');
-  aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+  aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
   aiResultContent.classList.add('hidden');
   aiToggleBtn.querySelector('.toggle-icon').classList.remove('open');
   aiConfirmBtn.classList.add('hidden');
@@ -1557,7 +1625,7 @@ aiMicBtn.addEventListener('click', function(){
     }
     isRecording = false;
     aiMicBtn.classList.remove('recording');
-    aiHint.textContent = '버튼을 눌러 음성을 입력하세요';
+    aiHint.textContent = '버튼을 탭하여 녹음 시작 → 다시 탭하여 종료';
     return;
   }
   startVoiceRecording();
@@ -1579,6 +1647,11 @@ aiUnitSelect.addEventListener('change', function(){
     aiVolumeField.style.display = 'none';
   } else {
     aiVolumeField.style.display = 'flex';
+  }
+  if(aiUnitSelect.value==='nap'||aiUnitSelect.value==='min'){
+    aiVolumeInput.step='5';
+  }else{
+    aiVolumeInput.step='10';
   }
 });
 
@@ -1605,7 +1678,7 @@ aiConfirmBtn.addEventListener('click', function(){
   }
   
   if(unit !== 'none' && !volume){
-    alert('용량을 입력해주세요.');
+    alert(unit==='nap'?'낮잠 시간(분)을 입력해주세요.':'용량을 입력해주세요.');
     return;
   }
   
@@ -1615,7 +1688,7 @@ aiConfirmBtn.addEventListener('click', function(){
   }
   
   var time = hour + ':' + minute;
-  var vol = unit === 'none' ? 0 : parseInt(volume) || 0;
+  var vol = unit === 'none' ? 0 : parseInt(volume,10) || 0;
   var ds = currentDate();
   
   aiModal.classList.remove('open');
