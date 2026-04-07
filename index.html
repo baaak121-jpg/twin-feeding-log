@@ -32,7 +32,7 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
 .add-row{display:flex;gap:.3rem;margin-bottom:1.1rem;margin-top:.2rem;align-items:center}
 .time-picker{display:flex;align-items:center;gap:.15rem;flex:0 0 auto}.time-picker select{padding:.6rem .25rem;font-size:.88rem;border:1px solid var(--border);border-radius:6px;font-family:inherit;background:var(--card);color:var(--text)}.time-picker #feeding-hour,.time-picker #feeding-minute{width:2.6rem;text-align:center;text-align-last:center}.time-picker .time-sep{font-weight:600;color:var(--text-soft);font-size:1rem}
 .vol-wrap{display:flex;align-items:stretch;flex:1;min-width:3.5rem;gap:.25rem}.vol-wrap #feeding-volume{flex:1;min-width:2rem;padding:.6rem .2rem;font-size:.95rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.vol-wrap #feeding-volume:focus{border-color:#aaa;background:#fafafa}.vol-wrap #feeding-volume::-webkit-inner-spin-button,.vol-wrap #feeding-volume::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vol-wrap #feeding-volume::placeholder{color:var(--text-soft);text-align:center}.vol-wrap #feeding-volume:disabled{background:#e8e8e8;color:#999;cursor:not-allowed;border-color:#ddd}.vol-wrap #feeding-volume:disabled::placeholder{color:#aaa}.vol-unit{display:flex;align-items:center;justify-content:center;min-width:2.2rem;padding:0 .3rem;font-size:.7rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px;white-space:nowrap;flex-shrink:0}
-.feed-type-select{flex-shrink:0;min-width:4.2rem;max-width:5.2rem;padding:.5rem .25rem;font-size:.78rem;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none;text-align:center;text-align-last:center}.nap-wrap{display:flex;align-items:stretch;flex:0 0 auto;gap:.2rem}.nap-wrap #nap-minutes{width:2.9rem;min-width:2.5rem;padding:.55rem .15rem;font-size:.85rem;text-align:center;border:1px solid var(--border);border-radius:6px;font-family:inherit;-moz-appearance:textfield;outline:none;-webkit-appearance:none;appearance:none}.nap-wrap #nap-minutes::-webkit-inner-spin-button,.nap-wrap #nap-minutes::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.nap-wrap .nap-unit{display:flex;align-items:center;justify-content:center;min-width:1.5rem;padding:0 .2rem;font-size:.72rem;color:var(--text-soft);background:var(--bg);border:1px solid var(--border);border-radius:6px}
+.feed-type-select{flex-shrink:0;width:2.75rem;min-width:2.75rem;padding:.5rem .15rem;font-size:1.05rem;line-height:1;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none;text-align:center;text-align-last:center;cursor:pointer}
 .poop-toggle{flex-shrink:0;padding:.55rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);cursor:pointer;font-size:.95rem;line-height:1;transition:all .15s;-webkit-user-select:none;user-select:none;margin-left:.15rem}.poop-toggle.poop-active{background:linear-gradient(145deg,#f5d0d5,#e8b4bc);border-color:#c4707e;box-shadow:0 2px 6px rgba(196,112,126,.35),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .baby-tabs-wrap{margin-bottom:1.2rem}.baby-tabs{display:flex;gap:.5rem}.baby-btn{flex:1;padding:.6rem;font-size:.9rem;font-family:inherit;border:2px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-soft);cursor:pointer;transition:all .2s}.baby-btn:hover{opacity:.85}
 .baby-btn[data-baby="1"]{border-color:#a8c5d4;color:#5a8aa3}.baby-btn[data-baby="1"].active{background:linear-gradient(145deg,#9fc4d6,#7fadbf);color:#fff;box-shadow:0 4px 12px rgba(90,138,163,.5),inset 0 1px 0 rgba(255,255,255,.3);border-color:#6a9ab5;transform:translateY(-1px)}
@@ -193,18 +193,14 @@ section{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bo
         <span class="time-sep">:</span>
         <select id="feeding-minute" aria-label="분"></select>
       </div>
+      <select id="feed-type" class="feed-type-select" aria-label="분유·모유·낮잠" title="분유 / 모유 / 낮잠">
+        <option value="ml" selected>🍼</option>
+        <option value="min">🤱</option>
+        <option value="nap">😴</option>
+      </select>
       <div class="vol-wrap">
         <input type="number" id="feeding-volume" min="0" max="999" step="10" inputmode="numeric" placeholder="용량">
         <span class="vol-unit" id="vol-unit">ml</span>
-      </div>
-      <select id="feed-type" class="feed-type-select" aria-label="수유 방식">
-        <option value="">—</option>
-        <option value="ml">🍼 분유</option>
-        <option value="min">🤱 모유</option>
-      </select>
-      <div class="nap-wrap">
-        <input type="number" id="nap-minutes" min="0" max="999" step="5" inputmode="numeric" placeholder="낮잠" aria-label="낮잠 분">
-        <span class="nap-unit">분</span>
       </div>
       <button type="button" class="poop-toggle" id="btn-poop">💩</button>
     </div>
@@ -398,11 +394,10 @@ var mediaRecorder = null;
 var audioChunks = [];
 var isRecording = false;
 
-/* 수유 방식 드롭다운 + 낮잠 + 똥 */
-var selectedFeedType = '';
+/* 수유 방식(🍼🤱😴) 공유 숫자 입력 + 똥 */
+var selectedFeedType = 'ml';
 var poopActive = false;
 var feedTypeSelect = document.getElementById('feed-type');
-var napInput = document.getElementById('nap-minutes');
 var btnPoop = document.getElementById('btn-poop');
 var volUnitEl = document.getElementById('vol-unit');
 
@@ -427,29 +422,26 @@ function initNamesUI(){updateBabyButtonLabels();}
 
 function unitLabel(u){if(u==='min'||u==='nap')return'분';return'ml';}
 
-/* ── 분유/모유 미선택 시 수유량 비활성화 ── */
+/* ── 드롭다운(분유/모유/낮잠)에 맞춰 같은 칸의 단위·스텝 ── */
 function syncFeedVolumeUI(){
-  if(!selectedFeedType){
-    volumeInput.disabled=true;
-    volumeInput.placeholder='용량';
-    volumeInput.value='';
-    if(volUnitEl)volUnitEl.textContent='ml';
+  volumeInput.disabled=false;
+  if(selectedFeedType==='min'){
+    volumeInput.placeholder='시간';
+    volumeInput.step='5';
+    if(volUnitEl)volUnitEl.textContent='분';
+  }else if(selectedFeedType==='nap'){
+    volumeInput.placeholder='낮잠';
+    volumeInput.step='5';
+    if(volUnitEl)volUnitEl.textContent='분';
   }else{
-    volumeInput.disabled=false;
-    if(selectedFeedType==='min'){
-      volumeInput.placeholder='시간';
-      volumeInput.step='5';
-      if(volUnitEl)volUnitEl.textContent='분';
-    }else{
-      volumeInput.placeholder='용량';
-      volumeInput.step='10';
-      if(volUnitEl)volUnitEl.textContent='ml';
-    }
+    volumeInput.placeholder='용량';
+    volumeInput.step='10';
+    if(volUnitEl)volUnitEl.textContent='ml';
   }
 }
 
 feedTypeSelect.addEventListener('change',function(){
-  selectedFeedType=feedTypeSelect.value||'';
+  selectedFeedType=feedTypeSelect.value||'ml';
   try{localStorage.setItem('selectedFeedType',selectedFeedType);}catch(e){}
   syncFeedVolumeUI();
 });
@@ -575,8 +567,7 @@ editModalSave.addEventListener('click',function(){
     logsRef.child(editingLogDate).child(editingLogKey).update({volume:newVol});
   }
   var ou=origLog&&(origLog.unit||'ml');
-  if(ou==='nap'){try{localStorage.setItem('lastNap',''+newVol);}catch(e){}}
-  else{try{localStorage.setItem('lastVolume',''+newVol);}catch(e){}}
+  try{localStorage.setItem('lastVolume',''+newVol);}catch(e){}
   editModal.className='name-modal-overlay'; editingLogKey=null;
 });
 editModalDelete.addEventListener('click',function(){
@@ -948,14 +939,6 @@ volumeInput.addEventListener('input',function(){
   if(v>=1000)this.value='999';
   if(v<0)this.value='0';
 });
-if(napInput){
-  napInput.addEventListener('input',function(){
-    var v=parseInt(this.value,10);
-    if(v>=1000)this.value='999';
-    if(v<0)this.value='0';
-  });
-}
-
 /* ── 이전 수유량 기억 ── */
 var lastVol='';
 try{lastVol=localStorage.getItem('lastVolume')||'';}catch(e){}
@@ -968,22 +951,14 @@ btnAdd.addEventListener('click',function(){
   var ds=currentDate();var time=getTimeFromInputs();
   if(!time){setTimeToNow();time=getTimeFromInputs();}
   if(!time){_log('I: no time');return;}
-  var vol=volumeInput.value;var napStr=napInput?napInput.value:'';var poop=poopActive;
-  _log('I: vol='+vol+' nap='+napStr+' poop='+poop+' baby='+selectedBaby+' feed='+selectedFeedType);
-  if(!selectedFeedType)vol='';
-  var napVal=(napStr!==''&&napStr!=null)?parseInt(napStr,10):NaN;
-  if(isNaN(napVal)||napVal<0)napVal=0;
-  if(!vol&&!napVal&&!poop){_log('I: empty');return;}
-  if(vol&&selectedFeedType){
-    addLog(ds,time,selectedBaby,vol,false,selectedFeedType);
+  var vol=volumeInput.value;var poop=poopActive;
+  _log('I: vol='+vol+' poop='+poop+' baby='+selectedBaby+' feed='+selectedFeedType);
+  if(!vol&&!poop){_log('I: empty');return;}
+  if(vol){
+    addLog(ds,time,selectedBaby,vol,false,selectedFeedType||'ml');
     try{localStorage.setItem('lastVolume',vol);}catch(e){}
   }
-  if(napVal>0){
-    addLog(ds,time,selectedBaby,String(napVal),false,'nap');
-    try{localStorage.setItem('lastNap',String(napVal));}catch(e){}
-  }
   if(poop)addLog(ds,time,selectedBaby,'',true,'ml');
-  if(napInput)napInput.value='';
   poopActive=false;
   btnPoop.className='poop-toggle';
   try{localStorage.setItem('poopActive','0');}catch(e){}
@@ -999,17 +974,14 @@ try{
   savedPoop=localStorage.getItem('poopActive')||'';
 }catch(e){}
 
-if(feedTypeSelect&&savedFeed){
+if(!savedFeed||savedFeed==='')savedFeed='ml';
+if(savedFeed!=='ml'&&savedFeed!=='min'&&savedFeed!=='nap')savedFeed='ml';
+if(feedTypeSelect){
   selectedFeedType=savedFeed;
   feedTypeSelect.value=savedFeed;
 }
 
 syncFeedVolumeUI();
-
-try{
-  var ln=localStorage.getItem('lastNap')||'';
-  if(ln&&napInput)napInput.value=ln;
-}catch(e){}
 
 if(savedPoop==='1'){
   poopActive=true;
