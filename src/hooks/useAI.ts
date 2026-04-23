@@ -3,20 +3,22 @@ import { IAP } from '@apps-in-toss/web-framework';
 import { supabase } from '../lib/supabase';
 import { useAppStore } from '../store/appStore';
 
-export interface ParsedLog {
+export interface ParsedEntry {
   baby: '1' | '2' | 'both';
   hour: number | null;
   minute: number | null;
   relativeMinutes: number | null;
   relativeHours: number | null;
-  unit: 'ml' | 'min' | 'nap' | null;
+  unit: 'ml' | 'min' | null;
   volume: number | null;
   poop: boolean;
+  // 확정된 HH:MM (UI에서 수정 가능)
+  resolvedTime?: string;
 }
 
 function pad2(n: number) { return String(n).padStart(2, '0'); }
 
-function resolveTime(parsed: ParsedLog): string {
+function resolveTime(parsed: ParsedEntry): string {
   const now = new Date();
   let h = now.getHours();
   let m = now.getMinutes();
@@ -40,26 +42,103 @@ function resolveTime(parsed: ParsedLog): string {
 export function useAI() {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [parsed, setParsed] = useState<ParsedLog | null>(null);
-  const [resolvedTime, setResolvedTime] = useState('');
-  const [hint, setHint] = useState('버튼을 탭하여 녹음 시작 → 다시 탭하여 종료');
+  const [entries, setEntries] = useState<ParsedEntry[] | null>(null);
+  const [transcript, setTranscript] = useState('');
+  const [hint, setHint] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const { user, family, decrementAiCredits, setAiCredits } = useAppStore();
+  const { user, decrementAiCredits, setAiCredits } = useAppStore();
 
   const startRecording = useCallback(async () => {
     if (!user || user.aiCredits <= 0) return false;
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const recorder = new MediaRecorder(stream);
-    chunksRef.current = [];
-    recorder.ondataavailable = (e) => { chunksRef.current.push(e.data); };
-    recorder.start();
-    mediaRecorderRef.current = recorder;
-    setIsRecording(true);
-    setHint('녹음 중... (다시 탭하여 종료)');
-    return true;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => { chunksRef.current.push(e.data); };
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+      setError(null);
+      setHint('녹음 중');
+      return true;
+    } catch (e) {
+      console.error(e);
+      setError('마이크 권한이 없습니다.');
+      return false;
+    }
   }, [user]);
+
+  // 텍스트 → GPT 파싱 공통 로직
+  const parseText = useCallback(async (text: string) => {
+    const { family: fam } = useAppStore.getState();
+    const firstName = fam?.firstName ?? '첫째';
+    const secondName = fam?.secondName ?? '둘째';
+    const now = new Date();
+
+    const prompt = `다음 음성 텍스트에서 수유/배변 기록 정보를 추출해주세요. 여러 개의 기록이 있을 수 있습니다.
+현재 시각: ${now.getHours()}시 ${now.getMinutes()}분
+아기 이름: "${firstName}" (첫째=1), "${secondName}" (둘째=2), 둘 다=both
+음성 텍스트: "${text}"
+
+JSON 배열 형식으로만 응답 (entries 키 안에 배열):
+{"entries":[
+  {"baby":"1"|"2"|"both","hour":숫자|null,"minute":숫자|null,"relativeMinutes":숫자|null,"relativeHours":숫자|null,"unit":"ml"|"min"|null,"volume":숫자|null,"poop":true|false}
+]}
+
+규칙:
+- 분유/분유수유/ml → unit="ml"
+- 모유/모유수유/수유 → unit="min"
+- 똥/응가/배변 → poop=true, unit=null, volume=null
+- "N분 전" → relativeMinutes=N
+- "N시간 전" → relativeHours=N
+- "9시 반" 같은 절대시간 → hour=9, minute=30
+- 첫째만/둘째만 따로 양이 다르면 별도 entry로 분리 (예: "첫째는 120, 둘째는 110" → entry 2개)
+- 같은 양/같은 시간이면 baby="both" 하나로 통합
+- 한 문장에 여러 기록이면 각각 entry로 분리 (예: "첫째 분유 먹이고 둘째 응가" → entry 2개)`;
+
+    const gptResp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}` },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.1,
+        max_tokens: 400,
+        response_format: { type: 'json_object' },
+      }),
+    });
+    const gptData = await gptResp.json();
+    const content = gptData.choices[0].message.content;
+    const parsed = JSON.parse(content);
+    const rawEntries: ParsedEntry[] = Array.isArray(parsed.entries) ? parsed.entries : [];
+    return rawEntries.map((e) => ({ ...e, resolvedTime: resolveTime(e) }));
+  }, []);
+
+  // 텍스트 직접 입력으로 파싱 (마이크 없이 테스트용)
+  const processText = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setIsProcessing(true);
+    setTranscript(text);
+    setError(null);
+    try {
+      const resolved = await parseText(text);
+      if (resolved.length === 0) {
+        setError('기록을 추출하지 못했어요. 다시 시도해주세요.');
+        return;
+      }
+      setEntries(resolved);
+      setHint('인식 결과를 확인하세요');
+      // 텍스트 직접 입력은 크레딧 차감 없음 (dev only)
+    } catch (e) {
+      console.error(e);
+      setError('파싱 실패. 다시 시도해주세요.');
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [parseText]);
 
   const stopAndProcess = useCallback(async () => {
     const recorder = mediaRecorderRef.current;
@@ -75,10 +154,6 @@ export function useAI() {
         recorder.stream.getTracks().forEach((t) => t.stop());
 
         try {
-          const { family: fam } = useAppStore.getState();
-          const firstName = fam?.firstName ?? '첫째';
-          const secondName = fam?.secondName ?? '둘째';
-
           // Whisper 음성 인식
           const formData = new FormData();
           formData.append('file', audioBlob, 'audio.webm');
@@ -90,43 +165,30 @@ export function useAI() {
             headers: { Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}` },
             body: formData,
           });
-          const { text: transcript } = await whisperResp.json();
+          const whisperData = await whisperResp.json();
+          const text: string = whisperData.text ?? '';
+          setTranscript(text);
 
-          // GPT-4o-mini 파싱
-          const now = new Date();
-          const prompt = `다음 음성 텍스트에서 수유 기록 정보를 추출해주세요.
-현재 시각: ${now.getHours()}시 ${now.getMinutes()}분
-아기 이름: "${firstName}" (첫째), "${secondName}" (둘째)
-음성 텍스트: "${transcript}"
+          if (!text.trim()) {
+            setError('음성이 인식되지 않았어요. 다시 시도해주세요.');
+            return;
+          }
 
-JSON으로만 응답:
-{"baby":"1"|"2"|"both","hour":숫자|null,"minute":숫자|null,"relativeMinutes":숫자|null,"relativeHours":숫자|null,"unit":"ml"|"min"|"nap"|null,"volume":숫자|null,"poop":true|false}
-
-규칙: 분유/ml→unit="ml", 모유/수유→unit="min", 낮잠→unit="nap", 똥/응가→poop=true, "N분 전"→relativeMinutes=N, 절대시간→hour/minute 직접 입력`;
-
-          const gptResp = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}` },
-            body: JSON.stringify({ model: 'gpt-4o-mini', messages: [{ role: 'user', content: prompt }], temperature: 0.2, max_tokens: 200 }),
-          });
-          const gptData = await gptResp.json();
-          const content = gptData.choices[0].message.content;
-          const match = content.match(/\{[\s\S]*\}/);
-          if (match) {
-            const result: ParsedLog = JSON.parse(match[0]);
-            setParsed(result);
-            setResolvedTime(resolveTime(result));
-            setHint('인식 결과를 확인하세요');
-            decrementAiCredits();
-            // Supabase에도 크레딧 업데이트
-            if (user) {
-              const newCredits = Math.max(0, user.aiCredits - 1);
-              await supabase.from('users').update({ ai_credits: newCredits }).eq('id', user.id);
-            }
+          const resolved = await parseText(text);
+          if (resolved.length === 0) {
+            setError('기록을 추출하지 못했어요. 다시 시도해주세요.');
+            return;
+          }
+          setEntries(resolved);
+          setHint('인식 결과를 확인하세요');
+          decrementAiCredits();
+          if (user) {
+            const newCredits = Math.max(0, user.aiCredits - 1);
+            await supabase.from('users').update({ ai_credits: newCredits }).eq('id', user.id);
           }
         } catch (e) {
-          setHint('인식 실패. 다시 시도해주세요.');
           console.error(e);
+          setError('인식 실패. 다시 시도해주세요.');
         } finally {
           setIsProcessing(false);
         }
@@ -134,7 +196,7 @@ JSON으로만 응답:
       };
       recorder.stop();
     });
-  }, [user, decrementAiCredits]);
+  }, [user, decrementAiCredits, parseText]);
 
   const purchaseCredits = useCallback((onSuccess: () => void) => {
     if (!IAP) { alert('인앱결제를 사용할 수 없는 환경입니다.'); return; }
@@ -144,7 +206,6 @@ JSON으로만 응답:
         sku: 'ai_credits_10',
         processProductGrant: async ({ orderId }) => {
           try {
-            // 서버에서 결제 검증 후 크레딧 지급
             const edgeUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/grant-ai-credits`;
             const resp = await fetch(edgeUrl, {
               method: 'POST',
@@ -166,15 +227,33 @@ JSON으로만 응답:
     });
   }, [setAiCredits]);
 
+  const updateEntry = useCallback((idx: number, patch: Partial<ParsedEntry>) => {
+    setEntries((prev) => {
+      if (!prev) return prev;
+      const next = [...prev];
+      next[idx] = { ...next[idx], ...patch };
+      return next;
+    });
+  }, []);
+
+  const removeEntry = useCallback((idx: number) => {
+    setEntries((prev) => {
+      if (!prev) return prev;
+      const next = prev.filter((_, i) => i !== idx);
+      return next.length > 0 ? next : null;
+    });
+  }, []);
+
   const reset = useCallback(() => {
-    setParsed(null);
-    setResolvedTime('');
-    setHint('버튼을 탭하여 녹음 시작 → 다시 탭하여 종료');
+    setEntries(null);
+    setTranscript('');
+    setError(null);
+    setHint('');
   }, []);
 
   return {
-    isRecording, isProcessing, parsed, resolvedTime, hint,
-    startRecording, stopAndProcess, purchaseCredits, reset,
-    setParsed, setResolvedTime,
+    isRecording, isProcessing, entries, transcript, hint, error,
+    startRecording, stopAndProcess, processText, purchaseCredits, reset,
+    updateEntry, removeEntry,
   };
 }

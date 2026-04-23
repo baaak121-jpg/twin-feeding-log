@@ -47,8 +47,33 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-1); font-size: 16px; -webkit-text-size-adjust: 100%; }
-    #root { height: 100vh; display: flex; flex-direction: column; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #222; color: var(--text-1); font-size: 16px; -webkit-text-size-adjust: 100%;
+      display: flex; justify-content: center; align-items: stretch; min-height: 100vh;
+    }
+    #root {
+      height: 100vh;
+      width: 100%;
+      max-width: 430px;       /* 모바일(아이폰 Pro Max 기준) 폭 제한 */
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 24px rgba(0,0,0,0.15);
+    }
+    /* 실제 모바일 기기(또는 좁은 뷰포트)에서는 그림자/여백 제거 */
+    @media (max-width: 430px) {
+      body { background: var(--bg); }
+      #root { box-shadow: none; max-width: 100%; }
+    }
+
+    /* 숫자 입력 up/down 스피너 제거 */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+    input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   </style>
 </head>
 <body>

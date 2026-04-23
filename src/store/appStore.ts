@@ -18,12 +18,15 @@ function todayStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+export type TimeFormat = '12h' | '24h';
+
 interface AppState {
   user: AppUser | null;
   family: AppFamily | null;
   currentDate: string;
   view: 'timeline' | 'stats';
   selectedBaby: '1' | '2' | 'both';
+  timeFormat: TimeFormat;
 
   setUser: (user: AppUser | null) => void;
   setFamily: (family: AppFamily | null) => void;
@@ -32,6 +35,7 @@ interface AppState {
   setSelectedBaby: (baby: '1' | '2' | 'both') => void;
   decrementAiCredits: () => void;
   setAiCredits: (credits: number) => void;
+  setTimeFormat: (fmt: TimeFormat) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -40,12 +44,17 @@ export const useAppStore = create<AppState>((set) => ({
   currentDate: todayStr(),
   view: 'timeline',
   selectedBaby: '1',
+  timeFormat: (localStorage.getItem('smpr_timeFormat') as TimeFormat) ?? '24h',
 
   setUser: (user) => set({ user }),
   setFamily: (family) => set({ family }),
   setCurrentDate: (date) => set({ currentDate: date }),
   setView: (view) => set({ view }),
   setSelectedBaby: (baby) => set({ selectedBaby: baby }),
+  setTimeFormat: (fmt) => {
+    localStorage.setItem('smpr_timeFormat', fmt);
+    set({ timeFormat: fmt });
+  },
   decrementAiCredits: () =>
     set((s) => ({
       user: s.user ? { ...s.user, aiCredits: Math.max(0, s.user.aiCredits - 1) } : null,

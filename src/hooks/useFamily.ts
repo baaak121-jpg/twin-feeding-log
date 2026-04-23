@@ -5,21 +5,50 @@ import { useAppStore } from '../store/appStore';
 
 export function useFamily() {
   const [loading, setLoading] = useState(false);
-  const { user, setFamily } = useAppStore();
+  const { user, setUser, setFamily } = useAppStore();
 
   const createFamily = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
-      // 세션 확인
-      const { data: { session } } = await supabase.auth.getSession();
-      console.log('[createFamily] session uid:', session?.user?.id, '/ store uid:', user.id);
+      // 세션 확인 — 불일치 시 세션 UID를 진실의 소스로 삼아 스토어 재정렬
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data, error: authError } = await supabase.auth.signInAnonymously();
+        if (authError) throw authError;
+        session = data.session;
+      }
       if (!session) throw new Error('세션 없음 — 앱을 재시작해 주세요');
-      if (session.user.id !== user.id) throw new Error(`UID 불일치: session=${session.user.id.slice(0,8)} store=${user.id.slice(0,8)}`);
+
+      const sessionUid = session.user.id;
+      if (sessionUid !== user.id) {
+        console.warn('[createFamily] UID 재정렬:', user.id.slice(0, 8), '→', sessionUid.slice(0, 8));
+        // users 레코드 존재 확인 후 스토어 갱신
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('ai_credits')
+          .eq('id', sessionUid)
+          .maybeSingle();
+        const tossUserKey = parseInt(sessionUid.replace(/-/g, '').slice(0, 12), 16);
+        if (!existingUser) {
+          await supabase.from('users').insert({
+            id: sessionUid,
+            toss_user_key: tossUserKey,
+            ai_credits: 10,
+          });
+        }
+        setUser({
+          id: sessionUid,
+          tossUserKey,
+          aiCredits: existingUser?.ai_credits ?? 10,
+        });
+      }
+
+      const effectiveUid = sessionUid;
 
       const { data, error } = await supabase
         .from('families')
-        .insert({ owner_id: user.id })
+        .insert({ owner_id: effectiveUid })
         .select()
         .single();
 
@@ -30,7 +59,7 @@ export function useFamily() {
 
       await supabase.from('family_members').insert({
         family_id: data.id,
-        user_id: user.id,
+        user_id: effectiveUid,
       });
 
       setFamily({
@@ -42,12 +71,31 @@ export function useFamily() {
     } finally {
       setLoading(false);
     }
-  }, [user, setFamily]);
+  }, [user, setUser, setFamily]);
 
   const joinFamily = useCallback(async (inviteCode: string) => {
     if (!user) return false;
     setLoading(true);
     try {
+      // 세션 UID 재정렬
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data, error: authError } = await supabase.auth.signInAnonymously();
+        if (authError) throw authError;
+        session = data.session;
+      }
+      if (!session) return false;
+      const effectiveUid = session.user.id;
+      if (effectiveUid !== user.id) {
+        const tossUserKey = parseInt(effectiveUid.replace(/-/g, '').slice(0, 12), 16);
+        const { data: existingUser } = await supabase
+          .from('users').select('ai_credits').eq('id', effectiveUid).maybeSingle();
+        if (!existingUser) {
+          await supabase.from('users').insert({ id: effectiveUid, toss_user_key: tossUserKey, ai_credits: 10 });
+        }
+        setUser({ id: effectiveUid, tossUserKey, aiCredits: existingUser?.ai_credits ?? 10 });
+      }
+
       const { data: fam, error } = await supabase
         .from('families')
         .select()
@@ -58,7 +106,7 @@ export function useFamily() {
 
       await supabase.from('family_members').upsert({
         family_id: fam.id,
-        user_id: user.id,
+        user_id: effectiveUid,
       });
 
       setFamily({
@@ -71,7 +119,7 @@ export function useFamily() {
     } finally {
       setLoading(false);
     }
-  }, [user, setFamily]);
+  }, [user, setUser, setFamily]);
 
   const updateBabyNames = useCallback(async (firstName: string, secondName: string) => {
     const { family, setFamily: sf } = useAppStore.getState();

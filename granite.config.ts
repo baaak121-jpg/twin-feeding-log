@@ -9,7 +9,7 @@ export default defineConfig({
   },
   web: {
     host: '192.168.0.14',
-    port: 5173,
+    port: 5174,
     commands: {
       dev: 'vite',
       build: 'tsc -b && vite build',

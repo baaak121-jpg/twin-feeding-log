@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useFamily } from '../hooks/useFamily';
 import { useAppStore } from '../store/appStore';
+import type { TimeFormat } from '../store/appStore';
 
 interface Props {
   onClose: () => void;
 }
 
 export default function InviteModal({ onClose }: Props) {
-  const { family } = useAppStore();
+  const { family, timeFormat, setTimeFormat } = useAppStore();
   const { shareInvite, updateBabyNames } = useFamily();
   const [sharing, setSharing] = useState(false);
   const [editingNames, setEditingNames] = useState(false);
@@ -87,6 +88,31 @@ export default function InviteModal({ onClose }: Props) {
               ))}
             </div>
           )}
+        </div>
+
+        {/* 시간 표시 형식 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#333D4B', marginBottom: 10 }}>시간 표시 형식</div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {(['24h', '12h'] as TimeFormat[]).map((fmt) => {
+              const active = timeFormat === fmt;
+              return (
+                <button
+                  key={fmt}
+                  onClick={() => setTimeFormat(fmt)}
+                  style={{
+                    flex: 1, height: 44, borderRadius: 10, cursor: 'pointer',
+                    border: `1.5px solid ${active ? '#3182F6' : '#E5E8EB'}`,
+                    background: active ? '#EBF3FF' : '#fff',
+                    color: active ? '#3182F6' : '#6B7684',
+                    fontSize: 14, fontWeight: active ? 700 : 500,
+                  }}
+                >
+                  {fmt === '24h' ? '24시간  (13:30)' : '12시간  (오후 1:30)'}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Invite */}
